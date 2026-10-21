@@ -1,0 +1,1090 @@
+/* ═══════════════════════════════════════════════════
+  Registro Civil – Santiago del Estero
+  style.css
+   ═══════════════════════════════════════════════════ */
+
+/* ── Variables ── */
+:root {
+  --rc-red:       #c8102e;
+  --rc-red-dark:  #a00d24;
+  --rc-red-light: rgba(200, 16, 46, 0.08);
+  --rc-dark:      #1c1c1c;
+  --rc-gray-bg:   #6b6b6b;   /* margen gris exterior */
+  --rc-page-bg:   #ffffff;   /* fondo blanco del contenido */
+  --rc-border:    #e2e2e2;
+  --rc-text-muted:#888888;
+  --rc-footer:    #2a2a2a;
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body:    'Barlow', sans-serif;
+}
+
+/* ── Reset base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--rc-gray-bg);
+  color: var(--rc-dark);
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════
+  WRAPPER DE PÁGINA (blanco centrado)
+   ═══════════════════════════════════════════════════ */
+.page-wrapper {
+  background: var(--rc-page-bg);
+  max-width: 960px;
+  margin: 0 auto;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════════════════════════════
+  NAVBAR
+   ═══════════════════════════════════════════════════ */
+.navbar-rc {
+  background: #fff;
+  border-bottom: 3px solid var(--rc-red);
+  padding: 0 28px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
+}
+
+/* Logo RC circular */
+.logo-rc {
+  width: 48px;
+  height: 48px;
+  background: var(--rc-red);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+/* Links de navegación */
+.nav-links {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.nav-links a {
+  padding: 7px 20px;
+  text-decoration: none;
+  color: var(--rc-dark);
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  background: var(--rc-red);
+  color: #fff;
+}
+
+/* Botón "Solicitar turno": solo en el menú mobile (oculto en escritorio) */
+.nav-links a.nav-turno { display: none; }
+
+/* Tablet: menú más compacto para que entre todo en una línea */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .navbar-rc { padding: 0 16px; }
+  .nav-links a { padding: 7px 10px; font-size: 14px; }
+  .navbar-brand-text { display: none !important; }
+}
+
+
+
+/* Logo Santiago del Estero (derecha) */
+.logo-sde {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--rc-red);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  line-height: 1;
+  text-align: right;
+}
+
+.logo-sde span {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: #999;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.logo-ministerio-mobile {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-top: 1px solid #f0f0f0;
+  text-decoration: none;
+  color: var(--rc-dark);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════
+  CONTENIDO INTERIOR
+   ═══════════════════════════════════════════════════ */
+.page-content {
+  flex: 1;
+  padding: 20px 28px 40px;
+}
+
+/* ── Buscador ── */
+.search-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+.search-box {
+  display: flex;
+  border: 2px solid var(--rc-red);
+  border-radius: 6px;
+  width: 100%;
+  max-width: 540px;
+  position: relative;
+  border-radius: 0 4px 4px 0;
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 11px 16px;
+  font-size: 15px;
+  font-family: var(--font-body);
+  color: var(--rc-dark);
+}
+
+.search-box button {
+  background: var(--rc-red);
+  border: none;
+  color: #fff;
+  padding: 0 20px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-box button:hover { background: var(--rc-red-dark); }
+
+/* ═══════════════════════════════════════════════════
+  CARRUSEL
+   ═══════════════════════════════════════════════════ */
+.carousel-rc {
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 34px;
+  box-shadow: 0 4px 20px rgba(200, 16, 46, 0.20);
+}
+
+.carousel-rc .carousel-item {
+  background: var(--rc-red);
+  min-height: 155px;
+  padding: 0px;
+}
+
+.carousel-rc .carousel-item .carousel-slide-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 28px;
+  min-height: 95px;
+  padding: 30px 40px;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.carousel-text h3 {
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.carousel-text p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  margin: 0;
+}
+
+.carousel-text p strong { color: #fff; }
+
+.carousel-cta {
+  display: inline-block;
+  margin-top: 12px;
+  background: #fff;
+  color: var(--rc-red) !important;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.carousel-cta:hover { opacity: 0.88; }
+
+.carousel-icon-circle {
+  width: 88px;
+  height: 88px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 40px;
+  color: #fff;
+}
+
+/* Variantes de slide */
+.slide-2 { background: linear-gradient(135deg, #b00020 0%, #c8102e 60%, #e53050 100%) !important; }
+.slide-3 { background: linear-gradient(135deg, #8b0000 0%, #c0001d 100%) !important; }
+
+/* Indicadores */
+.carousel-rc .carousel-indicators [data-bs-target] {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.55);
+  transition: background 0.3s;
+}
+.carousel-rc .carousel-indicators .active {
+  background-color: #fff;
+}
+
+/* ════════════════════ MODAL TURNO ════════════════════ */
+.turno-step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+}
+.turno-step-indicator .step-circle {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #888;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px;
+  transition: all .2s;
+}
+.turno-step-indicator .step-circle.active {
+  background: var(--rc-red);
+  color: #fff;
+}
+.turno-step-indicator .step-circle.done {
+  background: #28a745;
+  color: #fff;
+}
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: #e5e7eb;
+  min-width: 40px;
+  margin-bottom: 16px;
+}
+
+/* Opciones de trámite */
+.turno-tramite-option { display: block; cursor: pointer; margin: 0; position: relative; }
+/* Oculto visualmente pero accesible con teclado */
+.turno-tramite-option input[type="radio"] {
+  position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none;
+}
+.turno-tramite-option input:focus-visible + .turno-tramite-card {
+  outline: 2px solid var(--rc-red); outline-offset: 2px;
+}
+.turno-tramite-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all .2s;
+  background: #fff;
+}
+.turno-tramite-card i {
+  font-size: 22px;
+  color: #aaa;
+  flex-shrink: 0;
+  transition: color .2s;
+}
+.turno-tramite-nombre {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1c1c1c;
+}
+.turno-tramite-desc {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+.turno-tramite-option input:checked + .turno-tramite-card {
+  border-color: var(--rc-red);
+  background: rgba(200,16,46,.04);
+}
+.turno-tramite-option input:checked + .turno-tramite-card i {
+  color: var(--rc-red);
+}
+.turno-tramite-card:hover {
+  border-color: var(--rc-red);
+  box-shadow: 0 2px 8px rgba(200,16,46,.1);
+}
+
+/* Inputs */
+.turno-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 6px;
+}
+.turno-input {
+  width: 100%;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 7px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: #1c1c1c;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  background: #fff;
+}
+.turno-input:focus {
+  border-color: var(--rc-red);
+  box-shadow: 0 0 0 3px rgba(200,16,46,.1);
+}
+.turno-input.error { border-color: var(--rc-red); background: rgba(200,16,46,.03); }
+.turno-input:disabled { background: #f3f4f6; color: #999; }
+
+/* Mensaje de error debajo de cada campo */
+.turno-field-error {
+  display: none;
+  font-size: 12px;
+  color: var(--rc-red);
+  margin-top: 4px;
+  font-weight: 600;
+}
+.turno-field-error.show { display: block; }
+
+/* Error */
+.turno-error {
+  background: rgba(200,16,46,.07);
+  border: 1px solid rgba(200,16,46,.25);
+  border-radius: 7px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--rc-red);
+  margin-top: 12px;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Botón outline */
+.btn-rc-outline {
+  background: transparent;
+  color: var(--rc-red);
+  border: 1.5px solid var(--rc-red);
+  border-radius: 5px;
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all .2s;
+}
+.btn-rc-outline:hover { background: var(--rc-red); color: #fff; }
+
+
+/* ═══════════════════════════════════════════════════
+  SECCIÓN TÍTULOS
+   ═══════════════════════════════════════════════════ */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--rc-dark);
+  border-left: 5px solid var(--rc-red);
+  padding-left: 12px;
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
+}
+
+/* ═══════════════════════════════════════════════════
+  TARJETAS DE SERVICIOS
+   ═══════════════════════════════════════════════════ */
+.service-card {
+  border: 2px solid var(--rc-border);
+  border-radius: 8px;
+  padding: 30px 16px 24px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--rc-dark);
+  display: block;
+  background: #fff;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s, color 0.25s;
+}
+
+.service-card:hover {
+  border-color: var(--rc-red);
+  box-shadow: 0 8px 24px rgba(200, 16, 46, 0.13);
+  transform: translateY(-5px);
+  color: var(--rc-red);
+}
+
+.service-card .svc-icon {
+  font-size: 46px;
+  margin-bottom: 14px;
+  display: block;
+  color: var(--rc-dark);
+  transition: color 0.25s;
+}
+
+.service-card:hover .svc-icon { color: var(--rc-red); }
+
+.service-card .svc-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════
+  TARJETAS DE NOTICIAS
+   ═══════════════════════════════════════════════════ */
+.news-card {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--rc-border);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+
+.news-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+  transform: translateY(-4px);
+}
+
+.news-thumb-placeholder {
+  width: 100%;
+  height: 88px;
+  background: linear-gradient(135deg, #f5c6cb 0%, #e8b4bc 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: var(--rc-red);
+  flex-shrink: 0;
+}
+
+.news-thumb {
+  width: 100%;
+  height: 88px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  flex-shrink: 0;
+}
+
+.news-body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.news-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--rc-red);
+  margin-bottom: 2px;
+}
+
+.news-title {
+  font-weight: 700;
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: var(--rc-dark);
+  margin-bottom: 4px;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-excerpt {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--rc-text-muted);
+  margin-bottom: 6px;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-date {
+  font-size: 11.5px;
+  color: var(--rc-text-muted);
+  margin-bottom: 8px;
+}
+
+/* Botón rojo reutilizable */
+.btn-rc {
+  background: var(--rc-red);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.2s;
+  align-self: flex-start;
+}
+
+.btn-rc:hover { background: var(--rc-red-dark); color: #fff; }
+
+@media (max-width: 575.98px) {
+  #noticias-grid .news-card {
+    max-width: 100%;
+  }
+
+  .news-thumb,
+  .news-thumb-placeholder {
+    height: 72px;
+  }
+
+  .news-thumb-placeholder {
+    font-size: 24px;
+  }
+
+  .news-body {
+    padding: 10px 12px 12px;
+  }
+
+  .news-title {
+    font-size: 13px;
+    line-clamp: 2;
+  }
+
+  .news-excerpt {
+    font-size: 11.5px;
+    line-clamp: 2;
+  }
+
+  .news-date {
+    font-size: 11px;
+  }
+
+  .news-body .btn-rc {
+    width: 100%;
+    text-align: center;
+    padding: 8px 12px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .news-thumb,
+  .news-thumb-placeholder {
+    height: 80px;
+  }
+}
+
+/* ── Modal noticias ── */
+.modal-header-rc {
+  background: var(--rc-red);
+  color: #fff;
+  border-bottom: none;
+}
+
+.modal-header-rc .btn-close { filter: invert(1) brightness(2); }
+
+/* ═══════════════════════════════════════════════════
+  FOOTER
+   ═══════════════════════════════════════════════════ */
+footer {
+  background: var(--rc-footer);
+  color: #bbb;
+  padding: 36px 28px 18px;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.footer-brand a.footer-logo {
+  display: inline-block;
+  background: #fff;             /* el logo oficial tiene letras oscuras */
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin-bottom: 0;
+  line-height: 0;
+}
+.footer-brand a.footer-logo:hover { box-shadow: 0 0 0 2px var(--rc-red); }
+
+.footer-seal {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.footer-brand-text {
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.footer-brand-text strong {
+  color: #fff;
+  font-size: 13px;
+}
+
+footer h6 {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--rc-red);
+}
+
+footer a {
+  display: block;
+  color: #bbb;
+  text-decoration: none;
+  font-size: 13px;
+  margin-bottom: 7px;
+  transition: color 0.2s;
+}
+
+footer a:hover { color: var(--rc-red); }
+footer a i { margin-right: 6px; }
+
+.footer-divider {
+  border-color: rgba(255, 255, 255, 0.10);
+  margin: 24px 0 14px;
+}
+
+.footer-bottom {
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+}
+
+.tramite-card-simple {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 18px 20px;
+  transition: box-shadow .2s, transform .2s;
+}
+.tramite-card-simple:hover {
+  box-shadow: 0 4px 16px rgba(200,16,46,.12);
+  transform: translateY(-2px);
+}
+.tramite-icon {
+  width: 48px; height: 48px;
+  background: rgba(200,16,46,.08);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: var(--rc-red);
+  flex-shrink: 0;
+}
+.tramite-titulo {
+  font-weight: 600;
+  font-size: 15px;
+  color: #2d3748;
+}
+
+/* ── Cards de trámites en la página de listado ── */
+.tramite-item-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid var(--rc-border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  transition: box-shadow .2s, border-color .2s, transform .2s;
+  height: 100%;
+}
+.tramite-item-card:hover {
+  box-shadow: 0 4px 16px rgba(200,16,46,.10);
+  border-color: var(--rc-red);
+  transform: translateY(-2px);
+}
+.tramite-item-icon {
+  width: 44px; height: 44px;
+  background: rgba(200,16,46,.08);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: var(--rc-red);
+  flex-shrink: 0;
+}
+.tramite-item-body {
+  flex: 1;
+  min-width: 0;
+}
+.tramite-item-nombre {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1c1c1c;
+  margin-bottom: 3px;
+}
+.tramite-item-desc {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.4;
+  white-space: normal;
+  overflow:visible;
+  text-overflow: ellipsis;
+}
+
+/* Botones dentro del carrusel por encima de los controles */
+.carousel-slide-content .carousel-cta,
+.carousel-slide-content .btn-rc {
+  position: relative;
+  z-index: 10;
+}
+
+/* Bajar z-index de los controles prev/next */
+.carousel-control-prev,
+.carousel-control-next {
+  z-index: 5;
+}
+
+/* ── Accesibilidad — texto legible para adultos mayores ── */
+.tramite-item-nombre {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tramite-item-desc {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.news-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.sede-nombre {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.sede-dato {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.service-card .svc-label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+/* ── Botón Volver ── */
+.volver-wrap {
+  padding: 12px 0 0;
+  margin-bottom: 4px;
+  overflow: visible;
+}
+
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  color: var(--rc-red);
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-decoration: none;
+  padding: 12px 16px;
+  transition: gap .2s, opacity .2s;
+}
+
+.btn-volver:hover {
+  opacity: .75;
+  gap: 10px;
+  color: var(--rc-red);
+}
+
+.btn-volver i {
+  font-size: 22px;
+}
+
+/* ── FAQ ── */
+.faq-item {
+  border: 1px solid var(--rc-border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.faq-item .accordion-button {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rc-dark);
+  background: #fff;
+  padding: 16px 20px;
+}
+
+.faq-item .accordion-button:not(.collapsed) {
+  color: var(--rc-red);
+  background: rgba(200,16,46,.04);
+  box-shadow: none;
+}
+
+.faq-item .accordion-button::after {
+  filter: none;
+}
+
+.faq-item .accordion-button:not(.collapsed)::after {
+  filter: invert(18%) sepia(97%) saturate(2472%) hue-rotate(337deg);
+}
+
+.faq-body {
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.8;
+  color: #444;
+  padding: 4px 20px 20px;
+}
+
+/* ═══════════════════════════════════════════════════
+  RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+
+/* ── Desktop grande ── */
+@media (min-width: 1200px) {
+  .page-wrapper { max-width: 1140px; }
+}
+@media (min-width: 1400px) {
+  .page-wrapper { max-width: 1320px; }
+}
+
+/* ── Tablet ── */
+@media (max-width: 991px) {
+  .page-wrapper { max-width: 100%; }
+  .page-content { padding: 18px 20px 36px; }
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+
+  /* Navbar */
+  .navbar-rc {
+    padding: 0 0 0 12px;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+  }
+  .navbar-rc > a:first-child { flex-shrink: 0; }
+
+  /* Texto REGISTRO CIVIL — visible y pequeño */
+  .navbar-brand-text { display: block !important; }
+  .navbar-brand-text div:first-child { font-size: 12px; letter-spacing: 0.5px; }
+  .navbar-brand-text div:last-child  { font-size: 9px;  letter-spacing: 1px; }
+
+  /* Hamburguesa — pegado al borde derecho */
+  #btn-menu {
+    display: block !important;
+    margin-left: auto;
+    flex-shrink: 0;
+    padding: 4px 0;
+    margin-right: 0;
+  }
+
+  /* Logo ministerio */
+  .logo-ministerio-wrap   { display: none; }
+  .logo-ministerio-mobile { display: flex; }
+
+  /* Menú desplegable */
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 68px; left: 0; right: 0;
+    background: #fff;
+    border-bottom: 3px solid var(--rc-red);
+    box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    padding: 8px 0;
+    z-index: 999;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a {
+    padding: 12px 24px;
+    border-radius: 0;
+    font-size: 16px;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .nav-links a.nav-turno {
+    display: block;
+    margin: 8px 16px;
+    border-radius: 6px;
+    text-align: center;
+    background: var(--rc-red);
+    color: #fff;
+  }
+
+  /* Contenido */
+  .page-content { padding: 14px 14px 28px; }
+
+  /* Carrusel */
+  .carousel-rc .carousel-item { padding: 18px 16px; min-height: 110px; }
+  .carousel-rc .carousel-item .carousel-slide-content { min-height: 110px; padding: 18px 16px; }
+  .carousel-text h3 { font-size: 18px; }
+  .carousel-icon-circle { width: 56px; height: 56px; font-size: 24px; }
+  .carousel-slide-content { gap: 12px; }
+
+  /* Cards de trámites */
+  .tramite-item-card { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px; }
+  .tramite-item-card .btn-rc { align-self: stretch; text-align: center; width: 100%; margin-top: 8px; }
+  .tramite-item-desc { white-space: normal; overflow: visible; }
+
+  /* Cards de servicios */
+  .service-card { padding: 20px 10px 16px; }
+  .service-card .svc-icon { font-size: 36px; margin-bottom: 10px; }
+  .service-card .svc-label { font-size: 11px; letter-spacing: 1.5px; }
+
+  /* Footer */
+  footer { padding: 24px 14px 14px; }
+  .footer-bottom { font-size: 10px; }
+
+  /* Modal turno */
+  .step-line { min-width: 20px; }
+  .turno-step-indicator span { font-size: 10px; }
+  #modalTurno .modal-header { padding: 16px 18px !important; }
+  #modalTurno .modal-header + div { padding: 12px 18px !important; } /* indicador de pasos */
+  #modalTurno .modal-body { padding: 18px !important; }
+  #modalTurno .modal-footer { padding: 12px 18px !important; flex-wrap: nowrap; }
+  #modalTurno .modal-footer button { flex: 1; justify-content: center; }
+  .turno-tramite-card { padding: 12px 14px; }
+  /* 16px evita el zoom automático de iOS al enfocar un campo */
+  .turno-input { font-size: 16px; }
+
+  .carousel-rc .carousel-item .carousel-slide-content {
+    min-height: 120px;
+    padding: 18px 16px;
+  }
+}
+
+/* ── Mobile chico ── */
+@media (max-width: 480px) {
+  .navbar-rc { padding: 0 0 0 10px; }
+  .page-content { padding: 12px 12px 24px; }
+  .carousel-text h3 { font-size: 15px; }
+  .carousel-icon-circle { width: 48px; height: 48px; font-size: 20px; }
+  #modalTurno .modal-dialog { margin: 8px; }
+}
+
+/* ── Mobile muy chico (≤360px): se oculta el texto del logo para que entre el menú ── */
+@media (max-width: 360px) {
+  .navbar-brand-text { display: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════
+   ANIMACIONES DE SCROLL (Intersection Observer)
+   Mobile-first: traducción corta para no marear en pantallas chicas
+   ═══════════════════════════════════════════════════ */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Delays para stagger en grupos de cards */
+.delay-1 { transition-delay: 0.08s; }
+.delay-2 { transition-delay: 0.16s; }
+.delay-3 { transition-delay: 0.24s; }
+.delay-4 { transition-delay: 0.32s; }
+
+/* FAQ items: animación más suave y corta */
+.faq-item.reveal {
+  transform: translateY(14px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Respetar preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

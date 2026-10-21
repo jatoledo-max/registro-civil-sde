@@ -1,0 +1,100 @@
+ORM DE DJANGO — Guía de referencia
+====================================
+
+El ORM (Object-Relational Mapper) de Django es la capa que permite interactuar
+con la base de datos usando Python en lugar de SQL. Cada modelo Python se
+convierte en una tabla, y cada instancia del modelo es una fila.
+
+
+LA IDEA CENTRAL
+---------------
+En lugar de escribir SQL:
+    SELECT * FROM turnos_turno WHERE estado = 'pendiente' ORDER BY fecha;
+
+Se escribe Python:
+    Turno.objects.filter(estado='pendiente').order_by('fecha')
+
+El ORM genera el SQL automáticamente, independientemente del motor
+(SQLite, PostgreSQL, MySQL...).
+
+
+OPERACIONES BÁSICAS (CRUD)
+--------------------------
+
+# CREATE
+turno = Turno.objects.create(nombre="Juan", fecha="2026-07-01", ...)
+
+# READ
+Turno.objects.all()                          # todos los registros
+Turno.objects.get(id=5)                      # uno (lanza error si no existe)
+Turno.objects.filter(estado='pendiente')     # varios con condición
+Turno.objects.exclude(estado='cancelado')    # negación
+
+# UPDATE
+turno = Turno.objects.get(id=5)
+turno.estado = 'asistio'
+turno.save()
+
+# O en una sola línea:
+Turno.objects.filter(estado='pendiente').update(estado='cancelado')
+
+# DELETE
+Turno.objects.filter(estado='cancelado').delete()
+
+
+LOOKUPS (FILTROS AVANZADOS)
+----------------------------
+Se usan con doble guión bajo (__) para condiciones especiales:
+
+Turno.objects.filter(fecha__gte='2026-07-01')   # mayor o igual (>=)
+Turno.objects.filter(fecha__lte='2026-07-31')   # menor o igual (<=)
+Turno.objects.filter(nombre__icontains='juan')  # LIKE '%juan%' insensible
+Turno.objects.filter(tramite__in=['dni-nuevo', 'pasaporte'])  # IN (...)
+Turno.objects.filter(nombre__startswith='A')    # empieza con
+Turno.objects.filter(email__isnull=False)       # no nulo
+
+
+RELACIONES (ForeignKey)
+-----------------------
+El ORM maneja automáticamente las relaciones definidas con ForeignKey.
+
+# Acceder al objeto relacionado (hace un JOIN automático)
+turno.atendido_por           # → objeto User
+noticia.creado_por.email     # → email del usuario que creó la noticia
+
+# Relación inversa (usando related_name definido en el modelo)
+user.turnos_atendidos.all()       # todos los turnos que atendió ese user
+user.noticias_creadas.all()       # definido en Noticia con related_name=
+
+
+QUERYSETS SON LAZY (EVALUACIÓN DIFERIDA)
+-----------------------------------------
+Un QuerySet NO ejecuta SQL hasta que los datos son realmente necesarios.
+Esto permite encadenar filtros sin hacer múltiples consultas a la BD.
+
+qs = Turno.objects.filter(estado='pendiente')  # ← aún no tocó la BD
+qs = qs.order_by('fecha')                       # ← sigue sin tocar
+print(qs)                                       # ← AQUÍ ejecuta el SQL
+
+El SQL se ejecuta cuando se itera el QuerySet, se imprime, se convierte
+en lista, o se accede por índice.
+
+
+MIGRACIONES
+-----------
+El ORM también gestiona el esquema de la base de datos via migraciones.
+Cuando se modifica un modelo:
+
+    python manage.py makemigrations   # genera el archivo de migración
+    python manage.py migrate          # aplica los cambios a la BD
+
+Las migraciones registran el historial de cambios del esquema y permiten
+revertir cambios si es necesario.
+
+
+VENTAJA PRINCIPAL
+-----------------
+Al cambiar el motor de base de datos (por ejemplo de SQLite a PostgreSQL
+en producción), el código de modelos y vistas NO cambia. Solo se modifica
+la configuración DATABASES en settings.py. El ORM abstrae completamente
+el motor subyacente.

@@ -1,0 +1,503 @@
+/* =============================================
+   tramites.css – Registro Civil Santiago del Estero
+   CSS compartido para páginas de detalle de trámites
+   ============================================= */
+
+/* ---------- VARIABLES ---------- */
+:root {
+  --rc-red:       #c8102e;
+  --rc-red-dark:  #a00d24;
+  --rc-red-light: #f8e6ea;
+  --rc-grey:      #f5f5f5;
+  --rc-border:    #dee2e6;
+  --rc-text:      #333;
+  --rc-muted:     #6c757d;
+}
+
+/* ---------- TIPOGRAFÍA BASE ---------- */
+body {
+  font-family: 'Barlow', sans-serif;
+  color: var(--rc-text);
+  background-color: #fff;
+}
+
+/* ---------- NAVBAR ---------- */
+.bg-rc-red {
+  background-color: var(--rc-red) !important;
+}
+
+/* ---------- HERO DEL TRÁMITE ---------- */
+.tramite-hero {
+  background: linear-gradient(135deg, var(--rc-red) 0%, var(--rc-red-dark) 100%);
+  color: #fff;
+  padding: 2.5rem 0;
+  border-bottom: 4px solid var(--rc-red-dark);
+}
+
+.tramite-hero-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.tramite-hero-cat {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.tramite-hero-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+
+/* ---------- TARJETA PRINCIPAL DEL TRÁMITE ---------- */
+.tramite-card {
+  background: #fff;
+  border: 1px solid var(--rc-border);
+  border-radius: 10px;
+  padding: 1.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+.tramite-intro {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #444;
+}
+
+/* ---------- TÍTULOS DE SECCIÓN ---------- */
+.tramite-section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--rc-red);
+  letter-spacing: 0.3px;
+  margin-bottom: 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 2px solid var(--rc-red-light);
+}
+
+.tramite-subtitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-top: 1rem;
+  margin-bottom: .4rem;
+}
+
+/* ---------- LISTAS DE TRÁMITE ---------- */
+.tramite-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tramite-list li {
+  padding: .45rem 0 .45rem 1.5rem;
+  position: relative;
+  border-bottom: 1px solid var(--rc-grey);
+  font-size: .95rem;
+  line-height: 1.5;
+}
+
+.tramite-list li:last-child {
+  border-bottom: none;
+}
+
+.tramite-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: .85rem;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--rc-red);
+}
+
+/* ---------- PASOS ---------- */
+.tramite-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tramite-step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.step-num {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background: var(--rc-red);
+  color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-body {
+  padding-top: .35rem;
+  font-size: .95rem;
+  line-height: 1.6;
+}
+
+/* ---------- TARJETA LATERAL ---------- */
+.tramite-sidebar-card {
+  background: #fff;
+  border: 1px solid var(--rc-border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,.04);
+}
+
+.sidebar-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--rc-red);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: .75rem;
+}
+
+.sidebar-costo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--rc-muted);
+  margin-bottom: .4rem;
+}
+
+.sidebar-costo-valor {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: .4rem;
+}
+
+/* ---------- BOTONES ---------- */
+.btn-rc-red {
+  background-color: var(--rc-red);
+  border-color: var(--rc-red);
+  color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  letter-spacing: .4px;
+  transition: background .2s, border-color .2s;
+}
+
+.btn-rc-red:hover,
+.btn-rc-red:focus {
+  background-color: var(--rc-red-dark);
+  border-color: var(--rc-red-dark);
+  color: #fff;
+}
+
+.btn-outline-rc-red {
+  color: var(--rc-red);
+  border-color: var(--rc-red);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+}
+
+.btn-outline-rc-red:hover {
+  background-color: var(--rc-red);
+  color: #fff;
+}
+
+/* ---------- BADGE ---------- */
+.bg-rc-red {
+  background-color: var(--rc-red) !important;
+}
+
+/* ---------- ALERTAS ---------- */
+.alert-rc-info {
+  background-color: #e8f4fd;
+  border: 1px solid #bdd7ee;
+  color: #1a5276;
+  border-radius: 8px;
+  padding: .85rem 1rem;
+  font-size: .9rem;
+}
+
+.alert-rc-warning {
+  background-color: #fef9e7;
+  border: 1px solid #f9e79f;
+  color: #7d6608;
+  border-radius: 8px;
+  padding: .85rem 1rem;
+  font-size: .9rem;
+}
+
+/* ---------- TARJETAS DE TIEMPO (Divorcio) ---------- */
+.tramite-tiempo-card {
+  background: var(--rc-grey);
+  border: 1px solid var(--rc-border);
+  border-radius: 10px;
+  padding: 1.2rem;
+  text-align: center;
+}
+
+.tramite-tiempo-card--highlight {
+  background: var(--rc-red-light);
+  border-color: var(--rc-red);
+}
+
+.tiempo-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--rc-muted);
+  margin-bottom: .3rem;
+}
+
+.tiempo-valor {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--rc-red);
+  line-height: 1;
+}
+
+.tiempo-sub {
+  font-size: .8rem;
+  color: var(--rc-muted);
+}
+
+/* ---------- TARJETAS DE PAGO (Divorcio) ---------- */
+.pago-card {
+  background: var(--rc-grey);
+  border: 1px solid var(--rc-border);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  height: 100%;
+}
+
+.pago-icon {
+  font-size: 1.6rem;
+  color: var(--rc-red);
+  display: block;
+  margin-bottom: .4rem;
+}
+
+.pago-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: .95rem;
+  margin-bottom: .3rem;
+}
+
+.pago-demora {
+  font-size: .8rem;
+  color: var(--rc-muted);
+}
+
+/* ---------- REGLAS DE NOMBRES (nombresprohibidos.html) ---------- */
+.nombre-regla {
+  border-radius: 10px;
+  padding: 1.1rem;
+  height: 100%;
+}
+
+.nombre-regla--no {
+  background: #fde8ec;
+  border: 1px solid #f5b8c4;
+  color: #7b1626;
+}
+
+.nombre-regla--si {
+  background: #e8f8ef;
+  border: 1px solid #a9debb;
+  color: #1a5c35;
+}
+
+/* ---------- FAQ (nombresprohibidos.html) ---------- */
+.tramite-faq {
+  display: flex;
+  flex-direction: column;
+  gap: .1rem;
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--rc-grey);
+  padding: .9rem 0;
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-pregunta {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: .4rem;
+  font-size: .95rem;
+}
+
+.faq-respuesta {
+  font-size: .9rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* ---------- TEXTO RC-RED ---------- */
+.text-rc-red {
+  color: var(--rc-red) !important;
+}
+
+/* ---------- BREADCRUMB ---------- */
+.breadcrumb-item + .breadcrumb-item::before {
+  color: var(--rc-muted);
+}
+
+/* ── Accesibilidad visual — adultos mayores ── */
+.tramite-list li {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.8;
+}
+
+.tramite-intro {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.8;
+}
+
+.step-body {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.tramite-section-title {
+  font-size: 1.35rem;
+}
+
+.tramite-subtitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.sidebar-label {
+  font-size: 1.05rem;
+}
+
+.tramite-sidebar-card p,
+.tramite-sidebar-card ul,
+.tramite-sidebar-card li {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+/* ── Texto general dentro de tramite-card ── */
+.tramite-card p,
+.tramite-card ul li,
+.tramite-card ol li {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.8;
+  color: #333;
+}
+
+/* ── Breadcrumb más legible ── */
+.breadcrumb-item {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ── Tabla de costos ── */
+.tramite-sidebar-card .list-unstyled li {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+/* ── Texto dentro del detalle genérico ── */
+.tramite-card [style*="font-size:15px"],
+.tramite-card [style*="font-size:14px"] {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.8 !important;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 991px) {
+  .tramite-hero-title { font-size: 1.8rem; }
+}
+
+@media (max-width: 767px) {
+  .tramite-hero { padding: 1.5rem 0; }
+  .tramite-hero-title { font-size: 1.4rem; }
+  .tramite-hero-icon { width: 44px; height: 44px; font-size: 1.2rem; }
+
+  .tramite-card { padding: 1rem;
+                  overflow: hidden;
+                  word-wrap: break-word;
+                  overflow-wrap: break-word;
+                  }
+  .tramite-intro { font-size: .95rem; }
+
+  /* Columna lateral va abajo en mobile */
+  .tramite-sidebar-card { margin-bottom: 12px; }
+
+  /* Pasos más compactos */
+  .step-num { width: 30px; height: 30px; min-width: 30px; font-size: 1rem; }
+  .step-body { font-size: .9rem; }
+
+  /* Listas */
+  .tramite-list li {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding-right: 8px;
+  }
+
+  .col-lg-8, .col-lg-4 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .tramite-step {
+    gap: 8px;
+  }
+  .step-body {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: calc(100% - 44px);
+  }
+}
+
+@media (max-width: 480px) {
+  .tramite-hero-title { font-size: 1.2rem; }
+  .tramite-hero-icon { display: none; }
+  .tramite-section-title { font-size: 1.1rem; }
+}
+

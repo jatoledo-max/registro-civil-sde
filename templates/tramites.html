@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Trámites – Registro Civil{% endblock %}
+{% block nav_tramites %}active{% endblock %}
+
+{% block contenido %}
+
+  <!-- Hero -->
+  <div style="
+  height: 180px;
+  background: linear-gradient(rgba(200,16,46,.7), rgba(26,35,50,.50)),
+  url('https://i.pinimg.com/736x/37/f2/da/37f2da7c58761dbbec61ce601d63a32a.jpg') center/cover no-repeat;
+  display: flex; align-items: flex-end; padding: 0;">
+</div>
+  <div class="tramite-hero">
+    <div class="container">
+      <div class="d-flex align-items-center gap-3">
+        <div class="tramite-hero-icon">
+          <i class="bi bi-list-ul"></i>
+        </div>
+        <div>
+          <p class="tramite-hero-cat mb-0">Registro Civil</p>
+          <h1 class="tramite-hero-title mb-0">Trámites disponibles</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-4">
+
+{% if categorias %}
+  <div class="accordion" id="acordeon-tramites">
+    {% for cat in categorias %}
+    <div class="accordion-item" style="border:1px solid var(--rc-border);border-radius:10px;margin-bottom:12px;overflow:hidden;">
+
+      <h2 class="accordion-header">
+        <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#cat-{{ cat.id }}"
+          aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+          style="font-family:var(--font-display);font-size:18px;font-weight:700;color:#1c1c1c;">
+          <i class="bi {{ cat.icono }}" style="color:var(--rc-red);margin-right:10px;font-size:20px;"></i>
+          {{ cat.nombre }}
+          <span style="margin-left:10px;font-size:13px;font-weight:500;color:#888;">
+            ({{ cat.tramites|length }} trámite{{ cat.tramites|length|pluralize }})
+          </span>
+        </button>
+      </h2>
+
+      <div id="cat-{{ cat.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+        data-bs-parent="#acordeon-tramites">
+        <div class="accordion-body p-3">
+          <div class="row g-3">
+            {% for t in cat.tramites %}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="tramite-item-card">
+                <div class="tramite-item-icon">
+                  <i class="bi {{ t.icono }}"></i>
+                </div>
+                <div class="tramite-item-body">
+                  <div class="tramite-item-nombre">{{ t.nombre }}</div>
+                  {% if t.descripcion %}
+                  <div class="tramite-item-desc">{{ t.descripcion }}</div>
+                  {% endif %}
+                </div>
+                <a href="{% url 'tramite_detalle' t.slug %}" class="btn-rc">
+                  Ver trámite
+                </a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-file-earmark-x" style="font-size:48px;color:#ddd;display:block;margin-bottom:12px;"></i>
+    <p style="color:#888;">No hay trámites publicados por el momento.</p>
+  </div>
+{% endif %}
+
+  </div>
+
+{% endblock %}

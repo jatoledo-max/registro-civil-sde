@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Pasaporte – Registro Civil{% endblock %}
+{% block nav_tramites %}active{% endblock %}
+
+{% block contenido %}
+
+  <!-- Hero -->
+  <div class="tramite-hero">
+    <div class="container">
+      <div class="d-flex align-items-center gap-3">
+        <div class="tramite-hero-icon">
+          <i class="bi bi-passport"></i>
+        </div>
+        <div>
+          <p class="tramite-hero-cat mb-0">Identificación</p>
+          <h1 class="tramite-hero-title mb-0">Pasaporte</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <div class="row g-4">
+
+      <!-- Columna principal -->
+      <div class="col-lg-8">
+
+        <div class="tramite-card mb-4">
+          <p class="tramite-intro mb-0">
+            Este trámite te permite obtener tu <strong>primer ejemplar del pasaporte</strong>
+            o un <strong>nuevo ejemplar</strong>, emitido por el Ministerio del Interior
+            del Gobierno Nacional, a través del Registro Nacional de las Personas (RENAPER).
+          </p>
+        </div>
+
+        <!-- Requisitos -->
+<div class="tramite-card mb-4" style="flex-direction:column;align-items:stretch;">
+  <h2 class="tramite-section-title">
+    <i class="bi bi-clipboard-check me-2"></i>Requisitos del trámite
+  </h2>
+
+  <h3 class="tramite-subtitle">Menores de 18 años</h3>
+  <ul class="tramite-list">
+    <li>Partida de nacimiento actualizada.</li>
+    <li>DNI vigente (si está vencido pueden actualizar el DNI junto con el pasaporte).</li>
+    <li>Presencia de ambos progenitores o tutor legal con sus respectivos DNI.</li>
+    <li>En caso de corresponder, llevar sentencia de tutela.</li>
+  </ul>
+
+  <h3 class="tramite-subtitle mt-3">Mayores de 18 años</h3>
+  <ul class="tramite-list">
+    <li>DNI vigente.</li>
+    <li>Pasaporte anterior, si lo tuviera (recomendable, no obligatorio).</li>
+  </ul>
+
+  <div class="alert-rc-warning mt-3">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <strong>¡Importante!</strong> Si tenés visa en tu pasaporte anterior,
+    no olvides decirlo al hacer el trámite.
+  </div>
+</div>
+
+        <!-- Pasos -->
+        <div class="tramite-card mb-4">
+          <h2 class="tramite-section-title">
+            <i class="bi bi-list-ol me-2"></i>Pasos para realizar el trámite
+          </h2>
+          <div class="tramite-steps">
+            <div class="tramite-step">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <strong>Solicitá un turno</strong> en el Registro Civil más cercano
+                a tu domicilio o en un Centro de Documentación RENAPER mediante
+                la app <em>Mi Argentina</em>.
+              </div>
+            </div>
+            <div class="tramite-step">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <strong>Presentate con los requisitos</strong> el día y hora del turno.
+                Se toman datos biométricos: foto, firma y huellas digitales.
+                Te otorgarán un <strong>comprobante</strong> que debés conservar.
+              </div>
+            </div>
+            <div class="tramite-step">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <strong>Aguardá que el pasaporte llegue a tu domicilio.</strong>
+                Cuando lo recibas, el agente del correo te solicitará el comprobante
+                de inicio de trámite.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cómo se inicia -->
+        <div class="tramite-card mb-4">
+          <h2 class="tramite-section-title">
+            <i class="bi bi-building me-2"></i>¿Cómo se inicia?
+          </h2>
+          <p class="mb-0">
+            Se inicia de manera <strong>presencial y personal</strong> en la oficina
+            del Registro Civil o Centro de Documentación RENAPER más cercano a tu domicilio.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Columna lateral -->
+      <div class="col-lg-4">
+
+        <div class="tramite-sidebar-card mb-3">
+          <div class="sidebar-costo">
+            <i class="bi bi-cash-coin me-2"></i>Costos
+          </div>
+          <ul class="list-unstyled small mb-0">
+            <li class="mb-2 d-flex justify-content-between">
+              <span>Pasaporte regular</span>
+              <span class="badge bg-secondary">Ver RENAPER</span>
+            </li>
+            <li class="mb-2 d-flex justify-content-between">
+              <span>Pasaporte exprés</span>
+              <span class="badge bg-secondary">Ver RENAPER</span>
+            </li>
+            <li class="d-flex justify-content-between">
+              <span>Pasaporte al instante</span>
+              <span class="badge bg-secondary">Ver RENAPER</span>
+            </li>
+          </ul>
+          <p class="text-muted small mt-2 mb-0">
+            * Ver <a href="https://www.argentina.gob.ar/interior/renaper/tarifario-de-tramites-de-renaper" target="_blank" rel="noopener">tarifario RENAPER</a> para valores actualizados.
+          </p>
+        </div>
+
+        <div class="tramite-sidebar-card mb-3">
+          <h6 class="sidebar-label">
+            <i class="bi bi-clock me-2"></i>Vigencia
+          </h6>
+          <ul class="list-unstyled small mb-0">
+            <li class="mb-1"><strong>10 años</strong> — mayores de 18 años</li>
+            <li><strong>5 años</strong> — menores de 18 años</li>
+          </ul>
+        </div>
+
+        <div class="tramite-sidebar-card mb-3">
+          <h6 class="sidebar-label">
+            <i class="bi bi-truck me-2"></i>Plazos de entrega
+          </h6>
+          <ul class="list-unstyled small mb-0">
+            <li class="mb-1"><strong>Normal:</strong> 15 días hábiles</li>
+            <li class="mb-1"><strong>Exprés:</strong> 48 a 96 horas</li>
+            <li><strong>Al instante:</strong> 2 a 6 horas (aeropuertos)</li>
+          </ul>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

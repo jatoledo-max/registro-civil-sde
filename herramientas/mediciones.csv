@@ -1,0 +1,13 @@
+fecha,sitio,etiqueta,pagina,pedidos,kb_transferidos,ms_servidor_mediana,ms_descarga_total,wh_por_visita,g_co2e_por_visita,recurso_mas_pesado,kb_recurso_mas_pesado
+2026-10-16 12:23,https://javiertoledo1713.pythonanywhere.com,linea de base,/,16,738.6,590,9328,0.2269,0.1121,https://javiertoledo1713.pythonanywhere.com/media/noticias/registroicivil-1536x864_PknBa5j.jpeg,221.9
+2026-10-16 12:23,https://javiertoledo1713.pythonanywhere.com,linea de base,/tramites/,13,301.8,621,7631,0.0927,0.0458,https://javiertoledo1713.pythonanywhere.com/static/img/1003424207-removebg-preview.d7aee6073c74.png,163.3
+2026-10-16 12:23,https://javiertoledo1713.pythonanywhere.com,linea de base,/sedes/,15,472.5,762,7016,0.1452,0.0717,https://javiertoledo1713.pythonanywhere.com/static/img/1003424207-removebg-preview.d7aee6073c74.png,163.3
+2026-10-16 12:24,https://javiertoledo1713.pythonanywhere.com,linea de base,/,16,738.6,627,9248,0.2269,0.1121,https://javiertoledo1713.pythonanywhere.com/media/noticias/registroicivil-1536x864_PknBa5j.jpeg,221.9
+2026-10-16 12:24,https://javiertoledo1713.pythonanywhere.com,linea de base,/tramites/,13,301.8,610,6051,0.0927,0.0458,https://javiertoledo1713.pythonanywhere.com/static/img/1003424207-removebg-preview.d7aee6073c74.png,163.3
+2026-10-16 12:24,https://javiertoledo1713.pythonanywhere.com,linea de base,/sedes/,15,472.5,761,6740,0.1452,0.0717,https://javiertoledo1713.pythonanywhere.com/static/img/1003424207-removebg-preview.d7aee6073c74.png,163.3
+2026-10-16 12:25,http://localhost:8000,local antes,/,13,511.9,2061,17374,0.1573,0.0777,http://localhost:8000/static/img/1003424207-removebg-preview.png,163.3
+2026-10-16 12:25,http://localhost:8000,local antes,/tramites/,13,376.6,2047,17265,0.1157,0.0571,http://localhost:8000/static/img/1003424207-removebg-preview.png,163.3
+2026-10-16 12:25,http://localhost:8000,local antes,/sedes/,15,552.3,2045,17290,0.1697,0.0838,http://localhost:8000/static/img/1003424207-removebg-preview.png,163.3
+2026-10-16 12:27,http://localhost:8000,local con mejora,/,14,358.8,2038,19094,0.1102,0.0545,https://i.pinimg.com/1200x/a2/ea/06/a2ea06ce7c72f9c99532db94086bdb55.jpg,158.6
+2026-10-16 12:27,http://localhost:8000,local con mejora,/tramites/,14,223.5,2049,19035,0.0686,0.0339,https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css,30.1
+2026-10-16 12:27,http://localhost:8000,local con mejora,/sedes/,16,399.2,2036,21641,0.1226,0.0606,https://i.pinimg.com/1200x/87/a8/f8/87a8f840307f81da348900d40bad0a0a.jpg,148.4

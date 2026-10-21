@@ -1,0 +1,30 @@
+# Prueba local que simula el Data Center: nginx publica el sistema en
+#   http://localhost:8080/registro-civil/
+# Uso (desde la raíz del proyecto):
+#   docker compose -f docker/docker-compose.prueba.yml up -d --build
+#   docker compose -f docker/docker-compose.prueba.yml down
+services:
+  registro-civil:
+    build: ..
+    image: registro-civil:latest
+    environment:
+      SECRET_KEY: clave-solo-para-pruebas-locales-no-usar-en-produccion
+      DEBUG: "False"
+      URL_PREFIX: /registro-civil
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      CSRF_TRUSTED_ORIGINS: http://localhost:8080
+      GUNICORN_WORKERS: "2"
+    volumes:
+      - datos-prueba:/app/data
+
+  proxy:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx-prueba.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - registro-civil
+
+volumes:
+  datos-prueba:

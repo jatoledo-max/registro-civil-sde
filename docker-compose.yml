@@ -1,0 +1,15 @@
+# Uso: copiar .env.docker.ejemplo como .env.docker, completarlo y ejecutar
+#   docker compose up -d --build
+services:
+  registro-civil:
+    build: .
+    image: registro-civil:latest
+    env_file: .env.docker
+    ports:
+      - "8000:8000"
+    volumes:
+      - datos:/app/data          # base de datos e imágenes: sobreviven a las actualizaciones
+    restart: unless-stopped
+
+volumes:
+  datos:

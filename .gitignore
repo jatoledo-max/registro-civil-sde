@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Entorno virtual
+venv/
+.venv/
+env/
+
+# Django
+*.sqlite3
+/staticfiles/
+/media/
+
+# Variables de entorno (NUNCA subir al repo)
+.env
+
+# VS Code
+.vscode/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuración del contenedor (contiene claves)
+.env.docker

@@ -1,0 +1,1299 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel Administrativo – Registro Civil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}"/>
+
+  <!-- Estilos extra para cards de noticias en admin -->
+  <style>
+    .adm-noticia-card {
+      border: 1px solid var(--adm-border); border-radius: var(--adm-radius);
+      overflow: hidden; background: var(--adm-card-bg);
+      box-shadow: var(--adm-shadow); transition: var(--adm-trans); height: 100%;
+    }
+    .adm-noticia-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+    .adm-noticia-thumb {
+      height: 110px; background: linear-gradient(135deg,#f5c6cb,#e8b4bc);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; color: var(--adm-red); overflow: hidden;
+    }
+    .adm-noticia-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .adm-noticia-body { padding: 14px 16px 16px; }
+    .adm-noticia-tag  { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--adm-red); display: block; margin-bottom: 5px; }
+    .adm-noticia-titulo { font-weight: 700; font-size: 13.5px; line-height: 1.4; margin-bottom: 6px; color: var(--adm-text); }
+    .adm-noticia-fecha  { font-size: 11.5px; color: var(--adm-muted); margin-bottom: 6px; }
+    .adm-noticia-cuerpo-preview { font-size: 12.5px; color: var(--adm-muted); line-height: 1.5; margin-bottom: 12px; }
+    .adm-noticia-actions { display: flex; gap: 6px; }
+
+    /* Stat cards en noticias */
+    .adm-stat-sm {
+      background: #fff; border: 1px solid var(--adm-border);
+      border-radius: var(--adm-radius); padding: 16px 20px;
+      box-shadow: var(--adm-shadow); text-align: center;
+    }
+    .adm-stat-sm .val { font-size: 26px; font-weight: 700; color: var(--adm-red); }
+    .adm-stat-sm .lbl { font-size: 12px; color: var(--adm-muted); font-weight: 600; margin-top: 3px; }
+
+    /* Pass strength hint */
+    .pass-hint { font-size: 11.5px; color: var(--adm-muted); margin-top: 4px; }
+  </style>
+  <script>
+    // Prefijo del sitio (vacío en la raíz, ej.: "/registro-civil" en un subdirectorio)
+    window.RC = { base: "{{ url_base }}", csrfCookie: "{{ csrf_cookie_name }}" };
+    window.RC.url = function (ruta) { return window.RC.base + ruta; };
+  </script>
+</head>
+<body class="admin-body">
+
+<!-- Toast container -->
+<div id="adm-toast-container"></div>
+
+<!-- ══════════════════════════════════════════
+     TOPBAR
+══════════════════════════════════════════ -->
+
+<header class="adm-topbar">
+  <div class="adm-topbar-left">
+    <button id="adm-hamburger" style="display:none;" onclick="toggleAdmSidebar()">
+      <i class="bi bi-list"></i>
+    </button>
+    <img src="{% static 'img/logo-rc.webp' %}" alt="RC" width="36" height="36" style="height:36px;"/>
+    <div class="adm-brand-text">
+      REGISTRO CIVIL
+      <span>PANEL ADMIN</span>
+    </div>
+  </div>
+  <div class="adm-topbar-right">
+    <div class="adm-user-badge">
+      <div class="adm-user-avatar"><i class="bi bi-person-fill" style="font-size:15px;"></i></div>
+      <span id="adm-current-user">
+        {{ usuario.get_full_name|default:usuario.username }}
+        {% if es_superadmin %}<small style="color:var(--adm-red)"> · Super Admin</small>{% endif %}
+      </span>
+    </div>
+    <form method="POST" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="adm-btn-logout">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Cerrar sesión</span>
+      </button>
+    </form>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+    SIDEBAR
+══════════════════════════════════════════ -->
+<div class="adm-sidebar-overlay" id="adm-overlay" onclick="toggleAdmSidebar()"></div>
+<aside class="adm-sidebar">
+  <div class="adm-sidebar-section">
+    <span class="adm-sidebar-label">Menú principal</span>
+
+    <button class="adm-nav-item active" data-section="turnos">
+      <i class="bi bi-calendar2-check"></i>
+      <span>Gestión de Turnos</span>
+      <span class="adm-nav-badge" id="nav-badge-turnos">0</span>
+    </button>
+
+    <button class="adm-nav-item" data-section="estadisticas">
+      <i class="bi bi-bar-chart-fill"></i>
+      <span>Estadísticas de turnos</span>
+    </button>
+
+{% if es_superadmin %}
+<button class="adm-nav-item" data-section="usuarios">
+  <i class="bi bi-people-fill"></i>
+  <span>Gestión de Usuarios</span>
+  <span class="adm-nav-badge" id="nav-badge-usuarios">0</span>
+</button>
+{% endif %}
+
+    <button class="adm-nav-item" data-section="noticias">
+      <i class="bi bi-newspaper"></i>
+      <span>Gestión de Noticias</span>
+      <span class="adm-nav-badge" id="nav-badge-noticias">0</span>
+    </button>
+  </div>
+
+  <button class="adm-nav-item" data-section="sedes">
+    <i class="bi bi-geo-alt-fill"></i>
+    <span>Gestión de Sedes</span>
+    <span class="adm-nav-badge" id="nav-badge-sedes">0</span>
+  </button>
+
+  <button class="adm-nav-item" data-section="tramites-panel">
+  <i class="bi bi-list-ul"></i>
+  <span>Gestión de Trámites</span>
+  <span class="adm-nav-badge" id="nav-badge-tramites-panel">0</span>
+</button>
+
+{% if es_superadmin %}
+  <button class="adm-nav-item" data-section="actividad">
+    <i class="bi bi-clock-history"></i>
+    <span>Registro de actividad</span>
+  </button>
+{% endif %}
+
+  <div class="adm-sidebar-section" style="margin-top:auto;padding-top:20px;border-top:1px solid rgba(255,255,255,.06);">
+    <span class="adm-sidebar-label">Sistema</span>
+    <a href="{% url 'inicio' %}" class="adm-nav-item" style="text-decoration:none;">
+      <i class="bi bi-globe2"></i>
+      <span>Ver sitio público</span>
+    </a>
+    <a href="{% url 'cambiar_password' %}" class="adm-nav-item" style="text-decoration:none;">
+      <i class="bi bi-key"></i>
+      <span>Cambiar contraseña</span>
+    </a>
+    <form method="POST" action="{% url 'logout' %}">
+  {% csrf_token %}
+      <button type="submit" class="adm-nav-item" style="width:100%;">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Cerrar sesión</span>
+      </button>
+    </form>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════════
+  MAIN CONTENT
+══════════════════════════════════════════ -->
+<main class="adm-main">
+
+  <!-- ─────────────── SECCIÓN TURNOS ─────────────── -->
+  <section id="sec-turnos" class="adm-section active">
+
+    <div class="adm-page-header">
+      <h2><i class="bi bi-calendar2-check"></i> Gestión de Turnos</h2>
+      <button class="btn-adm-primary" id="btn-nuevo-turno">
+        <i class="bi bi-plus-circle"></i> Nuevo turno
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="adm-stat-card">
+          <div class="adm-stat-icon blue"><i class="bi bi-calendar2"></i></div>
+          <div>
+            <div class="adm-stat-value" id="stat-total-turnos">0</div>
+            <div class="adm-stat-label">Total turnos</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="adm-stat-card">
+          <div class="adm-stat-icon yellow"><i class="bi bi-hourglass-split"></i></div>
+          <div>
+            <div class="adm-stat-value" id="stat-pendientes">0</div>
+            <div class="adm-stat-label">Pendientes hoy</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="adm-stat-card">
+          <div class="adm-stat-icon green"><i class="bi bi-check-circle"></i></div>
+          <div>
+            <div class="adm-stat-value" id="stat-asistio">0</div>
+            <div class="adm-stat-label">Asistieron hoy</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="adm-stat-card">
+          <div class="adm-stat-icon red"><i class="bi bi-x-circle"></i></div>
+          <div>
+            <div class="adm-stat-value" id="stat-cancelado">0</div>
+            <div class="adm-stat-label" style="font-size:11px;">No asistió / Cancelado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="adm-card">
+      <div class="adm-card-header">
+        <h5><i class="bi bi-table"></i> Listado de turnos</h5>
+        <div class="adm-filters">
+          <input type="text" class="adm-filter-input" id="filtro-turno"
+            placeholder="Buscar por nombre, DNI…" style="min-width:200px;"/>
+          <select class="adm-filter-input" id="filtro-tramite" style="min-width:150px;">
+              <option value="">Todos los trámites</option>
+              <option value="dni-5-8">DNI 5-8 años</option>
+              <option value="dni-14">DNI 14 años</option>
+              <option value="dni-domicilio">DNI Domicilio</option>
+              <option value="dni-nuevo">DNI Nuevo</option>
+              <option value="pasaporte">Pasaporte</option>
+          </select>
+        </div>
+      </div>
+      <div class="adm-table-wrap">
+        <table class="adm-table">
+          <thead>
+            <tr>
+              <th>Nº Turno</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Persona / DNI</th>
+              <th>Trámite</th>
+              <th>Origen</th>
+              <th>Estado</th>
+              <th>Cambiar estado</th>
+              <th>Reprogramar</th>
+            </tr>
+          </thead>
+          <tbody id="turnos-tbody">
+            <tr><td colspan="9" class="text-center py-4 text-muted">Cargando turnos…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── SECCIÓN ESTADÍSTICAS ─────────────── -->
+<section id="sec-estadisticas" class="adm-section">
+
+  <div class="adm-page-header">
+    <h2><i class="bi bi-bar-chart-fill"></i> Estadísticas de Turnos</h2>
+    <button class="btn-adm-secondary" onclick="ModEstadisticas.init()">
+      <i class="bi bi-arrow-clockwise"></i> Actualizar
+    </button>
+  </div>
+
+  <!-- Cards resumen -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="adm-stat-card">
+        <div class="adm-stat-icon blue"><i class="bi bi-calendar-check"></i></div>
+        <div>
+          <div class="adm-stat-value" id="est-hoy-total">—</div>
+          <div class="adm-stat-label">Turnos hoy</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="adm-stat-card">
+        <div class="adm-stat-icon yellow"><i class="bi bi-hourglass-split"></i></div>
+        <div>
+          <div class="adm-stat-value" id="est-hoy-pendientes">—</div>
+          <div class="adm-stat-label">Pendientes hoy</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="adm-stat-card">
+        <div class="adm-stat-icon green"><i class="bi bi-check-circle"></i></div>
+        <div>
+          <div class="adm-stat-value" id="est-tasa">—</div>
+          <div class="adm-stat-label">Tasa asistencia</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="adm-stat-card">
+        <div class="adm-stat-icon red"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <div class="adm-stat-value" id="est-total">—</div>
+          <div class="adm-stat-label">Total histórico</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+
+    <!-- Distribución por estado -->
+    <div class="col-12 col-md-6">
+      <div class="adm-card h-100">
+        <div class="adm-card-header">
+          <h5><i class="bi bi-pie-chart-fill"></i> Por estado</h5>
+        </div>
+        <div class="adm-card-body">
+          <div id="est-por-estado"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Origen de turnos -->
+    <div class="col-12 col-md-6">
+      <div class="adm-card h-100">
+        <div class="adm-card-header">
+          <h5><i class="bi bi-globe"></i> Por origen</h5>
+        </div>
+        <div class="adm-card-body">
+          <div id="est-por-origen"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Por trámite -->
+    <div class="col-12 col-md-6">
+      <div class="adm-card h-100">
+        <div class="adm-card-header">
+          <h5><i class="bi bi-list-ol"></i> Por trámite</h5>
+        </div>
+        <div class="adm-card-body">
+          <div id="est-por-tramite"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Últimos 7 días -->
+    <div class="col-12 col-md-6">
+      <div class="adm-card h-100">
+        <div class="adm-card-header">
+          <h5><i class="bi bi-graph-up"></i> Últimos 7 días</h5>
+        </div>
+        <div class="adm-card-body">
+          <div id="est-ultimos-7"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+  <!-- ─────────────── SECCIÓN USUARIOS ─────────────── -->
+{% if es_superadmin %}
+  <section id="sec-usuarios" class="adm-section">
+
+    <div class="adm-page-header">
+      <h2><i class="bi bi-people-fill"></i> Gestión de Usuarios</h2>
+      <button class="btn-adm-primary" id="btn-nuevo-usuario">
+        <i class="bi bi-person-plus"></i> Nuevo usuario
+      </button>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="adm-stat-card">
+          <div class="adm-stat-icon blue"><i class="bi bi-people"></i></div>
+          <div>
+            <div class="adm-stat-value" id="stat-total-usuarios">0</div>
+            <div class="adm-stat-label">Usuarios activos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="adm-card">
+      <div class="adm-card-header">
+        <h5><i class="bi bi-person-lines-fill"></i> Usuarios del sistema</h5>
+      </div>
+      <div class="adm-table-wrap">
+        <table class="adm-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="usuarios-tbody">
+            <tr><td colspan="4" class="text-center py-4 text-muted">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+  <!-- ─────────────── SECCIÓN NOTICIAS ─────────────── -->
+  <section id="sec-noticias" class="adm-section">
+
+    <div class="adm-page-header">
+      <h2><i class="bi bi-newspaper"></i> Gestión de Noticias</h2>
+      <button class="btn-adm-primary" id="btn-nueva-noticia">
+        <i class="bi bi-plus-circle"></i> Nueva noticia
+      </button>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="adm-stat-card">
+          <div class="adm-stat-icon blue"><i class="bi bi-newspaper"></i></div>
+          <div>
+            <div class="adm-stat-value" id="stat-total-noticias">0</div>
+            <div class="adm-stat-label">Noticias publicadas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="adm-card">
+      <div class="adm-card-header">
+        <h5><i class="bi bi-grid-3x3-gap"></i> Todas las noticias</h5>
+        <small class="text-muted" style="font-size:12px;">Las publicadas se muestran en el sitio público.</small>
+      </div>
+      <div class="adm-card-body">
+        <div class="row g-3" id="noticias-admin-grid">
+          <div class="col-12 text-center py-4 text-muted">Cargando…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── SECCIÓN SEDES ─────────────── -->
+<section id="sec-sedes" class="adm-section">
+
+  <div class="adm-page-header">
+    <h2><i class="bi bi-geo-alt-fill"></i> Gestión de Sedes</h2>
+    <button class="btn-adm-primary" id="btn-nueva-sede">
+      <i class="bi bi-plus-circle"></i> Nueva sede
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="adm-stat-card">
+        <div class="adm-stat-icon blue"><i class="bi bi-geo-alt"></i></div>
+        <div>
+          <div class="adm-stat-value" id="stat-total-sedes">0</div>
+          <div class="adm-stat-label">Total sedes</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="adm-stat-card">
+        <div class="adm-stat-icon green"><i class="bi bi-check-circle"></i></div>
+        <div>
+          <div class="adm-stat-value" id="stat-sedes-activas">0</div>
+          <div class="adm-stat-label">Activas</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="adm-stat-card">
+        <div class="adm-stat-icon yellow"><i class="bi bi-hourglass-split"></i></div>
+        <div>
+          <div class="adm-stat-value" id="stat-sedes-pendientes">0</div>
+          <div class="adm-stat-label">Pendientes aprobación</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="adm-card">
+    <div class="adm-card-header">
+      <h5><i class="bi bi-table"></i> Listado de sedes</h5>
+      <div class="adm-filters">
+        <input type="text" class="adm-filter-input" id="filtro-sede"
+          placeholder="Buscar por nombre o dirección…" style="min-width:220px;"/>
+        <select class="adm-filter-input" id="filtro-sede-estado" style="min-width:140px;">
+          <option value="">Todos los estados</option>
+          <option value="true">Activas</option>
+          <option value="false">Pendientes</option>
+        </select>
+      </div>
+    </div>
+    <div class="adm-card-body p-0">
+      <div class="adm-table-wrap">
+        <table class="adm-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Dirección</th>
+              <th>Departamento</th>
+              <th>Horario</th>
+              <th>Estado</th>
+              <th>Mapa</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-sedes">
+            <tr><td colspan="6" class="text-center py-4 text-muted">Cargando sedes…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- ─────────────── SECCIÓN TRÁMITES ─────────────── -->
+{% if es_superadmin %}
+<!-- ─────────────── SECCIÓN REGISTRO DE ACTIVIDAD ─────────────── -->
+<section id="sec-actividad" class="adm-section">
+  <div class="adm-page-header">
+    <h2><i class="bi bi-clock-history"></i> Registro de actividad</h2>
+  </div>
+  <p class="actividad-ayuda">
+    Quién hizo qué y cuándo en turnos, noticias, trámites, sedes y usuarios. Los registros no se pueden editar
+    ni borrar. Las contraseñas nunca se guardan: solo queda constancia de que se cambiaron.
+  </p>
+
+  <div class="adm-card">
+    <div class="adm-card-header">
+      <h5><i class="bi bi-funnel"></i> <span id="actividad-total">0</span> registros</h5>
+      <div class="adm-filters actividad-filtros">
+        <input type="search" class="adm-filter-input" id="act-q" placeholder="Buscar registro o usuario…"/>
+        <select class="adm-filter-input" id="act-usuario"><option value="">Todos los usuarios</option></select>
+        <select class="adm-filter-input" id="act-modulo"><option value="">Todos los módulos</option></select>
+        <select class="adm-filter-input" id="act-accion"><option value="">Todas las acciones</option></select>
+        <input type="date" class="adm-filter-input" id="act-desde" title="Desde"/>
+        <input type="date" class="adm-filter-input" id="act-hasta" title="Hasta"/>
+      </div>
+    </div>
+    <div class="adm-table-wrap">
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th>Fecha y hora</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+            <th>Módulo</th>
+            <th>Registro</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody id="actividad-tbody">
+          <tr><td colspan="6" class="text-center py-4 text-muted">Cargando…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="actividad-paginas">
+      <button class="btn-adm-secondary" id="act-anterior"><i class="bi bi-chevron-left"></i> Anterior</button>
+      <span id="act-pagina">Página 1 de 1</span>
+      <button class="btn-adm-secondary" id="act-siguiente">Siguiente <i class="bi bi-chevron-right"></i></button>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section id="sec-tramites-panel" class="adm-section">
+
+  <div class="adm-page-header">
+    <h2><i class="bi bi-list-ul"></i> Gestión de Trámites</h2>
+    <button class="btn-adm-primary" id="btn-nuevo-tramite-panel">
+      <i class="bi bi-plus-circle"></i> Nuevo trámite
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="adm-stat-card">
+        <div class="adm-stat-icon blue"><i class="bi bi-list-ul"></i></div>
+        <div>
+          <div class="adm-stat-value" id="stat-total-tramites-panel">0</div>
+          <div class="adm-stat-label">Total trámites</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="adm-stat-card">
+        <div class="adm-stat-icon green"><i class="bi bi-check-circle"></i></div>
+        <div>
+          <div class="adm-stat-value" id="stat-tramites-publicados">0</div>
+          <div class="adm-stat-label">Publicados</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="adm-stat-card">
+        <div class="adm-stat-icon yellow"><i class="bi bi-hourglass-split"></i></div>
+        <div>
+          <div class="adm-stat-value" id="stat-tramites-pendientes">0</div>
+          <div class="adm-stat-label">Pendientes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="adm-card">
+    <div class="adm-card-header">
+      <h5><i class="bi bi-table"></i> Listado de trámites</h5>
+      <div class="adm-filters">
+        <input type="text" class="adm-filter-input" id="filtro-tramite-panel"
+          placeholder="Buscar por nombre…" style="min-width:200px;"/>
+        <select class="adm-filter-input" id="filtro-tramite-estado" style="min-width:150px;">
+          <option value="">Todos los estados</option>
+          <option value="borrador">Borrador</option>
+          <option value="revision">En revisión</option>
+          <option value="publicado">Publicado</option>
+          <option value="archivado">Archivado</option>
+        </select>
+      </div>
+    </div>
+    <div class="adm-card-body p-0">
+      <div class="adm-table-wrap">
+        <table class="adm-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Slug</th>
+              <th>Estado</th>
+              <th>Creado por</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-tramites-panel">
+            <tr><td colspan="6" class="text-center py-4 text-muted">Cargando trámites…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</section>
+</main>
+
+<!-- ══════════════════════════════════════════
+     MODALES
+══════════════════════════════════════════ -->
+
+<!-- Modal Turno (carga manual por empleado) -->
+<div class="modal fade" id="modal-turno" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header adm-modal-header">
+        <h5 class="modal-title" id="modal-turno-titulo">Nuevo Turno Manual</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="form-turno" novalidate>
+          <input type="hidden" name="turno-id"/>
+          <div class="row g-3">
+
+            <div class="col-12">
+              <div class="adm-form-group">
+                <label>Trámite <span style="color:var(--adm-red)">*</span></label>
+                <select name="turno-tramite" class="adm-form-control">
+                  <option value="">Seleccionar trámite</option>
+                  <option value="dni-5-8">DNI – Actualización 5-8 años</option>
+                  <option value="dni-14">DNI – Actualización 14 años</option>
+                  <option value="dni-domicilio">DNI – Cambio de domicilio</option>
+                  <option value="dni-nuevo">DNI – Nuevo ejemplar</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="adm-form-group">
+                <label>Fecha <span style="color:var(--adm-red)">*</span></label>
+                <input type="date" name="turno-fecha" id="adm-turno-fecha" class="adm-form-control" required/>
+                <small id="adm-fecha-aviso" class="text-danger" style="display:none;font-size:12px;">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  <span id="adm-fecha-aviso-msg"></span>
+                </small>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="adm-form-group">
+                <label>Horario <span style="color:var(--adm-red)">*</span></label>
+                <select name="turno-hora" id="adm-turno-hora" class="adm-form-control">
+                  <option value="">Seleccioná una fecha primero</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="adm-form-group">
+                <label>Nombre completo <span style="color:var(--adm-red)">*</span></label>
+                <input type="text" name="turno-nombre" class="adm-form-control"
+                  placeholder="Ej: Juan García" required/>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="adm-form-group">
+                <label>DNI <span style="color:var(--adm-red)">*</span></label>
+                <input type="text" name="turno-dni" class="adm-form-control"
+                  placeholder="Ej: 32456789" maxlength="8" required/>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="adm-form-group">
+                <label>Email <span style="color:var(--adm-red)">*</span></label>
+                <input type="email" name="turno-email" class="adm-form-control"
+                  placeholder="correo@ejemplo.com" required/>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="adm-form-group">
+                <label>Teléfono</label>
+                <input type="text" name="turno-telefono" class="adm-form-control"
+                  placeholder="Ej: 3854123456"/>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="adm-form-group">
+                <label>Estado</label>
+                <select name="turno-estado" class="adm-form-control">
+                  <option value="pendiente">Pendiente</option>
+                  <option value="asistio">Asistió</option>
+                  <option value="no_asistio">No asistió</option>
+                  <option value="cancelado">Cancelado</option>
+                </select>
+              </div>
+            </div>
+
+
+            <div class="col-12">
+              <div class="adm-form-group">
+                <label for="adm-turno-sede">Sede de atención <span style="color:var(--adm-red)">*</span></label>
+                <select name="turno-sede" id="adm-turno-sede" class="adm-form-control"
+                  data-central="{{ sede_central_id|default:'' }}">
+                  {% for sede in sedes_turnos %}
+                  <option value="{{ sede.id }}" {% if sede.id == sede_central_id %}selected{% endif %}>
+                    {{ sede.nombre }} — {{ sede.direccion }}, {{ sede.departamento }}
+                  </option>
+                  {% empty %}
+                  <option value="">No hay sedes activas cargadas</option>
+                  {% endfor %}
+                </select>
+                <small style="color:#888;font-size:12px;">
+                  Los turnos online del sitio se asignan a {{ sede_turnos.nombre|default:'la sede marcada con “Recibe turnos online”' }}.
+                </small>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer" style="gap:10px;">
+        <button class="btn-adm-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x"></i> Cancelar
+        </button>
+        <button class="btn-adm-primary" id="btn-guardar-turno"
+          onclick="ModTurnos.handleFormSave()">
+          <i class="bi bi-check-lg"></i> Guardar turno
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Usuario -->
+<div class="modal fade" id="modal-usuario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header adm-modal-header">
+        <h5 class="modal-title" id="modal-user-titulo">Nuevo Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="form-usuario" novalidate>
+          <input type="hidden" name="user-id"/>
+          <div class="adm-form-group">
+            <label>Nombre completo <span style="color:var(--adm-red)">*</span></label>
+            <input type="text" name="user-nombre" class="adm-form-control" placeholder="Ej: Laura Fernández" required/>
+          </div>
+          <div class="adm-form-group">
+            <label>Correo electrónico <span style="color:var(--adm-red)">*</span></label>
+            <input type="email" name="user-email" class="adm-form-control" placeholder="correo@ejemplo.com" required/>
+          </div>
+          <div class="adm-form-group">
+            <label>Contraseña</label>
+            <input type="password" name="user-pass" class="adm-form-control" placeholder="Contraseña"/>
+            <p class="pass-hint" id="pass-help">Requerida para nuevos usuarios.</p>
+          </div>
+          <div class="adm-form-group">
+            <label>Rol</label>
+            <select name="user-rol" class="adm-form-control">
+              <option value="operador">Operador</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer" style="gap:10px;">
+        <button class="btn-adm-secondary" data-bs-dismiss="modal"><i class="bi bi-x"></i> Cancelar</button>
+        <button class="btn-adm-primary" id="btn-guardar-usuario" onclick="ModUsuarios.handleFormSave()"><i class="bi bi-check-lg"></i> Guardar usuario</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Noticia -->
+<div class="modal fade" id="modal-noticia-form" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header adm-modal-header">
+        <h5 class="modal-title" id="modal-noticia-titulo">Nueva Noticia</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="form-noticia" novalidate enctype="multipart/form-data">
+          <input type="hidden" name="noticia-id"/>
+          <div class="adm-form-group">
+            <label>Título <span style="color:var(--adm-red)">*</span></label>
+            <input type="text" name="noticia-titulo" class="adm-form-control" placeholder="Título de la noticia" required/>
+          </div>
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="adm-form-group">
+                <label>Categoría / Tag</label>
+                <select name="noticia-tag" class="adm-form-control">
+                  <option value="Institucional">Institucional</option>
+                  <option value="Trámites">Trámites</option>
+                  <option value="Digitalización">Digitalización</option>
+                  <option value="Eventos">Eventos</option>
+                  <option value="General">General</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="adm-form-group">
+                <label>Estado</label>
+                <select name="noticia-estado" class="adm-form-control">
+                  <option value="borrador">Borrador</option>
+                  <option value="revision">En revisión</option>
+                  <option value="publicada">Publicada</option>
+                  <option value="archivada">Archivada</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="adm-form-group">
+            <label>Imagen (opcional)</label>
+            <input type="file" name="noticia-imagen" class="adm-form-control" accept="image/*"/>
+            <div id="noticia-imagen-preview" class="mt-2" style="display:none;">
+              <img src="" alt="Vista previa" style="max-height:120px;border-radius:8px;"/>
+            </div>
+          </div>
+          <div class="adm-form-group">
+            <label>Contenido <span style="color:var(--adm-red)">*</span></label>
+            <textarea name="noticia-cuerpo" class="adm-form-control" rows="5"
+              placeholder="Escribí el contenido completo de la noticia…" required></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer" style="gap:10px;">
+        <button class="btn-adm-secondary" data-bs-dismiss="modal"><i class="bi bi-x"></i> Cancelar</button>
+        <button class="btn-adm-primary" id="btn-guardar-noticia"><i class="bi bi-check-lg"></i> Guardar noticia</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Sede -->
+<div class="modal fade" id="modal-sede" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header adm-modal-header">
+        <h5 class="modal-title" id="modal-sede-titulo">Nueva Sede</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="form-sede" novalidate>
+          <input type="hidden" name="sede-id"/>
+          <div class="row g-3">
+            <div class="col-12">
+              <div class="adm-form-group">
+                <label>Nombre de la oficina <span style="color:var(--adm-red)">*</span></label>
+                <input type="text" name="sede-nombre" class="adm-form-control"
+                  placeholder="Ej: Registro Civil – Casa de Gobierno" required/>
+              </div>
+            </div>
+            <div class="col-12 col-md-7">
+              <div class="adm-form-group">
+                <label for="sede-direccion">Dirección (como la verá el ciudadano) <span style="color:var(--adm-red)">*</span></label>
+                <input type="text" name="sede-direccion" id="sede-direccion" class="adm-form-control"
+                  placeholder="Ej: Andes y Av. Belgrano Norte" maxlength="200" required/>
+              </div>
+            </div>
+            <div class="col-12 col-md-5">
+              <div class="adm-form-group">
+                <label for="sede-referencia">Referencia <small class="text-muted">(opcional)</small></label>
+                <input type="text" name="sede-referencia" id="sede-referencia" class="adm-form-control"
+                  placeholder="Ej: frente a la plaza, edificio de 3 pisos" maxlength="200"/>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="adm-form-group">
+                <label>Departamento <span style="color:var(--adm-red)">*</span></label>
+                <input type="text" name="sede-departamento" class="adm-form-control"
+                  placeholder="Ej: Capital" maxlength="100" required/>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="adm-form-group">
+                <label>Provincia</label>
+                <input type="text" name="sede-provincia" class="adm-form-control"
+                  value="Santiago del Estero" readonly/>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="adm-form-group">
+                <label>Horario <span style="color:var(--adm-red)">*</span></label>
+                <input type="text" name="sede-horario" class="adm-form-control"
+                  placeholder="Ej: Lunes a Viernes 09:00 a 13:00 hs." maxlength="200" required/>
+              </div>
+            </div>
+
+            <!-- Ubicación en el mapa -->
+            <div class="col-12">
+              <div class="adm-form-group mb-0">
+                <label>Ubicación en el mapa <span style="color:var(--adm-red)">*</span></label>
+                <div class="sede-map-buscar">
+                  <input type="text" id="sede-map-q" class="adm-form-control"
+                    placeholder="Buscar una calle, barrio o lugar…" autocomplete="off"/>
+                  <button type="button" class="btn-adm-secondary" id="sede-map-btn-buscar">
+                    <i class="bi bi-search"></i> Buscar
+                  </button>
+                </div>
+                <div id="sede-map-resultados" class="sede-map-resultados"></div>
+                <div id="sede-map" class="sede-map"></div>
+                <div class="sede-map-estado" id="sede-map-estado">
+                  <i class="bi bi-hand-index"></i>
+                  Hacé clic en el mapa sobre el edificio o arrastrá el marcador para ajustar.
+                </div>
+                <div class="sede-map-herramientas">
+                  <button type="button" class="btn-adm-secondary" id="sede-map-btn-ubicacion">
+                    <i class="bi bi-crosshair"></i> Usar mi ubicación
+                  </button>
+                  <div class="sede-map-pegar">
+                    <input type="text" id="sede-map-pegar" class="adm-form-control"
+                      placeholder="Pegar coordenadas o link de Google Maps"/>
+                    <button type="button" class="btn-adm-secondary" id="sede-map-btn-pegar">Aplicar</button>
+                  </div>
+                </div>
+                <input type="hidden" name="sede-lat"/>
+                <input type="hidden" name="sede-lng"/>
+              </div>
+            </div>
+
+            {% if es_superadmin %}
+            <div class="col-12 col-md-6">
+              <div class="adm-form-group">
+                <label>Estado</label>
+                <select name="sede-activo" class="adm-form-control">
+                  <option value="false">Pendiente de aprobación</option>
+                  <option value="true">Activa (aprobada)</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="adm-form-group">
+                <label>Turnos online</label>
+                <label class="sede-check">
+                  <input type="checkbox" name="sede-turnos-online"/>
+                  Esta sede recibe los turnos online del sitio
+                </label>
+                <small class="text-muted" style="font-size:12px;">Solo una sede a la vez; al marcarla se desmarca la anterior.</small>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer" style="gap:10px;">
+        <button class="btn-adm-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x"></i> Cancelar
+        </button>
+        <button class="btn-adm-primary" id="btn-guardar-sede"
+          onclick="ModSedes.handleFormSave()">
+          <i class="bi bi-check-lg"></i> Guardar sede
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Trámite -->
+<div class="modal fade" id="modal-tramite-panel" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header adm-modal-header">
+        <h5 class="modal-title" id="modal-tramite-panel-titulo">Nuevo Trámite</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="form-tramite-panel" novalidate>
+<input type="hidden" name="tramite-id"/>
+<div class="row g-3">
+
+  <div class="col-12">
+    <div class="adm-form-group">
+      <label>Nombre <span style="color:var(--adm-red)">*</span></label>
+      <input type="text" name="tramite-nombre" class="adm-form-control"
+        placeholder="Ej: Inscripción de Nacimiento" required/>
+    </div>
+  </div>
+
+<div class="col-12">
+  <div class="adm-form-group">
+    <label>Categoría</label>
+    <div class="d-flex gap-2">
+      <select name="tramite-categoria" class="adm-form-control" id="select-categoria-tramite">
+        <option value="">Seleccionar categoría</option>
+      </select>
+      <button type="button" class="btn-adm-secondary" id="btn-nueva-categoria"
+        title="Agregar nueva categoría" style="flex-shrink:0;">
+        <i class="bi bi-plus-lg"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Campo nueva categoría — oculto por defecto -->
+<div class="col-12" id="nueva-categoria-wrap" style="display:none;">
+  <div class="adm-form-group">
+    <label>Nueva categoría</label>
+    <div class="d-flex gap-2">
+      <input type="text" id="nueva-categoria-nombre" class="adm-form-control"
+        placeholder="Ej: Unión Convivencial"/>
+      <select id="nueva-categoria-icono" class="adm-form-control" style="max-width:180px;">
+        <option value="bi-file-earmark">General</option>
+        <option value="bi-person-fill-add">Nacimiento</option>
+        <option value="bi-person-vcard-fill">Identificación</option>
+        <option value="bi-people-fill">Matrimonio</option>
+        <option value="bi-file-earmark-medical-fill">Defunción</option>
+        <option value="bi-house-fill">Domicilio</option>
+        <option value="bi-heart">Familia</option>
+        <option value="bi-briefcase-fill">Legal</option>
+      </select>
+      <button type="button" class="btn-adm-primary" id="btn-confirmar-categoria"
+        style="flex-shrink:0;">
+        <i class="bi bi-check-lg"></i>
+      </button>
+      <button type="button" class="btn-adm-secondary" id="btn-cancelar-categoria"
+        style="flex-shrink:0;">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+  <div class="col-12">
+    <div class="adm-form-group">
+      <label>Identificador de URL <span style="color:var(--adm-red)">*</span></label>
+      <input type="text" name="tramite-slug" class="adm-form-control"
+        placeholder="Ej: inscripcion-nacimiento"/>
+      <small class="text-muted">Se usa internamente para generar el link del trámite. Solo minúsculas, números y guiones. No se puede cambiar después.</small>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="adm-form-group">
+      <label>Descripción</label>
+      <textarea name="tramite-descripcion" class="adm-form-control" rows="3"
+        placeholder="Breve descripción del trámite…"></textarea>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="adm-form-group">
+      <label>Requisitos <small class="text-muted">(uno por línea)</small></label>
+      <textarea name="tramite-requisitos" class="adm-form-control" rows="4"
+        placeholder="Ser mayor de edad.&#10;Presentar DNI vigente.&#10;…"></textarea>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="adm-form-group">
+      <label>¿Cómo se inicia? <small class="text-muted">(uno por línea)</small></label>
+      <textarea name="tramite-como-se-inicia" class="adm-form-control" rows="4"
+        placeholder="Presencial: solicitar turno en sede.&#10;Digital: iniciar desde el portal Mi Registro Civil.&#10;…"></textarea>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="adm-form-group mb-0">
+      <label class="mb-2">Modalidad</label>
+      <div class="d-flex gap-4">
+        <div class="d-flex align-items-center gap-2">
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="tramite-modalidad-presencial" name="tramite-modalidad-presencial"/>
+          </div>
+          <label class="mb-0">Presencial</label>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="tramite-modalidad-digital" name="tramite-modalidad-digital"/>
+          </div>
+          <label class="mb-0">Digital</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Precio + opciones -->
+  <div class="col-12">
+    <div class="adm-form-group mb-2">
+      <div class="d-flex align-items-center gap-3">
+        <label class="mb-0">Trámite gratuito</label>
+        <div class="form-check form-switch mb-0">
+          <input class="form-check-input" type="checkbox" id="tramite-gratuito" name="tramite-gratuito"
+            onchange="document.getElementById('precio-wrap').style.display = this.checked ? 'none' : 'block'"/>
+        </div>
+      </div>
+    </div>
+    <div class="adm-form-group mb-0">
+      <div class="d-flex align-items-center gap-3">
+        <label class="mb-0">Requiere turno previo</label>
+        <div class="form-check form-switch mb-0">
+          <input class="form-check-input" type="checkbox" id="tramite-requiere-turno" name="tramite-requiere-turno"/>
+        </div>
+      </div>
+    </div>
+    <div id="precio-wrap" class="adm-form-group">
+      <label>Precio ($)</label>
+      <input type="number" name="tramite-precio" class="adm-form-control"
+        placeholder="Ej: 27090" min="0" step="0.01"/>
+    </div>
+  </div>
+
+  {% if es_superadmin %}
+  <div class="col-12">
+    <div class="adm-form-group">
+      <label>Estado</label>
+      <select name="tramite-estado" class="adm-form-control">
+        <option value="borrador">Borrador</option>
+        <option value="revision">En revisión</option>
+        <option value="publicado">Publicado</option>
+        <option value="archivado">Archivado</option>
+      </select>
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12">
+    <div class="adm-form-group">
+      <label>Estado</label>
+      <select name="tramite-estado" class="adm-form-control">
+        <option value="borrador">Borrador</option>
+        <option value="revision">Enviar a revisión</option>
+      </select>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+        </form>
+      </div>
+      <div class="modal-footer" style="gap:10px;">
+        <button class="btn-adm-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x"></i> Cancelar
+        </button>
+        <button class="btn-adm-primary" id="btn-guardar-tramite-panel"
+          onclick="ModTramites.handleFormSave()">
+          <i class="bi bi-check-lg"></i> Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Modal Reprogramar Turno ══ -->
+<div class="modal fade" id="modal-reprogramar" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header adm-modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-calendar2-week me-2"></i>Reprogramar Turno
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <!-- Info del turno actual -->
+        <div class="mb-3 p-3"
+          style="background:#f8f9fa;border-radius:8px;border-left:3px solid var(--adm-red,#c0392b);">
+          <div style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">
+            Turno a reprogramar
+          </div>
+          <div id="reprog-info-nombre" style="font-weight:700;font-size:15px;"></div>
+          <div id="reprog-info-tramite" style="font-size:13px;color:#666;margin-top:2px;"></div>
+          <div id="reprog-info-actual" style="font-size:13px;color:#888;margin-top:4px;">
+            <i class="bi bi-calendar3"></i> <span></span>
+          </div>
+        </div>
+        <form id="form-reprogramar" novalidate>
+          <input type="hidden" name="reprog-turno-id"/>
+          <div class="row g-3">
+            <div class="col-12">
+              <div class="adm-form-group">
+                <label>Nueva fecha <span style="color:var(--adm-red,#c0392b)">*</span></label>
+                <input type="date" name="reprog-fecha" id="reprog-fecha"
+                  class="adm-form-control" required/>
+                <small id="reprog-fecha-aviso"
+                  style="display:none;color:#dc3545;font-size:12px;margin-top:4px;"></small>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="adm-form-group">
+                <label>Nuevo horario <span style="color:var(--adm-red,#c0392b)">*</span></label>
+                <select name="reprog-hora" id="reprog-hora" class="adm-form-control">
+                  <option value="">Seleccioná una fecha primero</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 p-2"
+            style="background:#fff3cd;border-radius:6px;font-size:12px;color:#856404;">
+            <i class="bi bi-envelope-fill me-1"></i>
+            El ciudadano recibirá un correo automático con la nueva fecha y hora.
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer" style="gap:10px;">
+        <button class="btn-adm-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x"></i> Cancelar
+        </button>
+        <button class="btn-adm-primary" id="btn-confirmar-reprogramar">
+          <i class="bi bi-calendar-check"></i> Confirmar reprogramación
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'js/admin.js' %}"></script>
+<script>
+  // ── Control del sidebar mobile ──
+  function toggleAdmSidebar() {
+    document.querySelector('.adm-sidebar')?.classList.toggle('open');
+    document.getElementById('adm-overlay')?.classList.toggle('open');
+  }
+
+  function cerrarSidebar() {
+    document.querySelector('.adm-sidebar')?.classList.remove('open');
+    document.getElementById('adm-overlay')?.classList.remove('open');
+  }
+
+  // ── Badges del sidebar desde la API ──
+  async function updateBadges() {
+    try {
+      const [turnosRes, noticiasRes] = await Promise.all([
+        fetch(RC.url('/api/turnos/')),
+        fetch(RC.url('/api/noticias/')),
+      ]);
+
+      if (turnosRes.ok) {
+        const data = await turnosRes.json();
+        const turnos = data.turnos || [];
+        const pendT = turnos.filter(x => x.estado === 'pendiente').length;
+        const badgeTurnos = document.getElementById('nav-badge-turnos');
+        if (badgeTurnos) badgeTurnos.textContent = pendT || turnos.length;
+      }
+
+      if (noticiasRes.ok) {
+        const data = await noticiasRes.json();
+        const noticias = data.noticias || [];
+        const badgeNoticias = document.getElementById('nav-badge-noticias');
+        if (badgeNoticias) badgeNoticias.textContent = noticias.length;
+      }
+    } catch {}
+  }
+
+  setTimeout(updateBadges, 500);
+</script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}Sedes – Registro Civil{% endblock %}
+{% block nav_sedes %}active{% endblock %}
+
+{% block css_extra %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  .sedes-hero {
+    background: var(--rc-red);
+    padding: 32px 0 28px;
+    margin-bottom: 0;
+  }
+  .sedes-hero h1 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 4px;
+    letter-spacing: .5px;
+  }
+  .sedes-hero p { color: rgba(255,255,255,.75); font-size: 14px; margin: 0; }
+
+  .sedes-filtros {
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--rc-border);
+    padding: 14px 0;
+    position: sticky;
+    top: 68px;
+    z-index: 100;
+  }
+  .filtro-input {
+    border: 1.5px solid var(--rc-border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color .2s;
+    background: #fff;
+    width: 100%;
+  }
+  .filtro-input:focus { border-color: var(--rc-red); }
+
+  .sede-card {
+    background: #fff;
+    border: 1px solid var(--rc-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: box-shadow .2s, transform .2s, border-color .2s;
+    cursor: pointer;
+    height: 100%;
+  }
+  .sede-card:hover {
+    box-shadow: 0 4px 16px rgba(200,16,46,.12);
+    transform: translateY(-2px);
+    border-color: var(--rc-red);
+  }
+  .sede-card.resaltada {
+    border-color: var(--rc-red);
+    box-shadow: 0 0 0 3px rgba(200,16,46,.15);
+  }
+  .sede-nombre {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--rc-dark);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .sede-nombre i { color: var(--rc-red); font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+  .sede-dato {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .sede-dato i { color: var(--rc-red); flex-shrink: 0; margin-top: 1px; }
+  .sede-badge {
+    display: inline-block;
+    background: rgba(200,16,46,.08);
+    color: var(--rc-red);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin: 2px 2px 0 0;
+  }
+  .btn-ver-mapa {
+    background: none;
+    border: 1.5px solid var(--rc-red);
+    color: var(--rc-red);
+    border-radius: 5px;
+    padding: 5px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 10px;
+  }
+  .btn-ver-mapa:hover { background: var(--rc-red); color: #fff; }
+  .sede-acciones { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .sede-acciones .btn-ver-mapa { margin-top: 0; text-decoration: none; display: inline-flex; align-items: center; }
+  .btn-como-llegar { background: var(--rc-red); color: #fff !important; }
+  .btn-como-llegar:hover { background: var(--rc-red-dark); }
+  .sede-turnos-online {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(40,167,69,.1); color: #1e7e34;
+    font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 20px; margin-bottom: 6px;
+  }
+  .sede-distancia {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #f1f3f5; color: #333;
+    font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 20px; margin: 0 0 6px 4px;
+  }
+  .btn-cercana {
+    width: 100%; background: #fff; color: var(--rc-red);
+    border: 1.5px solid var(--rc-red); border-radius: 5px;
+    padding: 7px 12px; font-size: 13px; font-weight: 600; font-family: var(--font-body);
+  }
+  .btn-cercana:hover, .btn-cercana.activo { background: var(--rc-red); color: #fff; }
+  .aviso-ubicacion { font-size: 12.5px; color: #888; margin-top: 6px; display: none; }
+
+  #mapa-sedes {
+    height: 420px;
+    border-radius: 10px;
+    border: 1px solid var(--rc-border);
+    z-index: 1;
+  }
+
+  .contador-sedes {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 16px;
+  }
+  .contador-sedes strong { color: var(--rc-dark); }
+
+  .empty-sedes {
+    text-align: center;
+    padding: 48px 20px;
+    color: #888;
+  }
+  .empty-sedes i { font-size: 48px; opacity: .3; display: block; margin-bottom: 12px; }
+</style>
+{% endblock %}
+
+{% block contenido %}
+
+<!-- Hero -->
+<div class="sedes-hero" style="
+  background: linear-gradient(135deg, rgba(200,16,46,.50) 0%, rgba(26,35,50,.9) 100%),
+  url('https://i.pinimg.com/1200x/87/a8/f8/87a8f840307f81da348900d40bad0a0a.jpg') center/cover no-repeat;">
+  <div class="container">
+    <div class="d-flex align-items-center gap-3">
+      <i class="bi bi-geo-alt-fill" style="font-size:32px;color:#fff;opacity:.9"></i>
+      <div>
+        <h1>Sedes del Registro Civil</h1>
+        <p>Encontrá la oficina más cercana a tu domicilio</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filtros -->
+<div class="sedes-filtros">
+  <div class="container">
+    <div class="row g-2">
+      <div class="col-12 col-md-4">
+        <input type="text" id="filtro-nombre" class="filtro-input"
+          placeholder="Buscar por nombre o dirección…" aria-label="Buscar sede"/>
+      </div>
+      <div class="col-12 col-md-3">
+        <select id="filtro-depto" class="filtro-input" aria-label="Filtrar por departamento">
+          <option value="">Todos los departamentos</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-3">
+        <button type="button" class="btn-cercana" id="btn-cercana">
+          <i class="bi bi-crosshair me-1"></i> Sede más cercana
+        </button>
+      </div>
+      <div class="col-6 col-md-2">
+        <button type="button" class="btn-rc w-100" onclick="limpiarFiltros()">
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Limpiar
+        </button>
+      </div>
+    </div>
+    <p class="aviso-ubicacion" id="aviso-ubicacion"></p>
+  </div>
+</div>
+
+<!-- Contenido principal -->
+<div class="container py-4">
+
+  <!-- Contador -->
+  <p class="contador-sedes">
+    Mostrando <strong id="contador-num">0</strong> sede(s)
+  </p>
+
+  <!-- Grid de cards -->
+  <div class="row g-3 mb-4" id="grid-sedes"></div>
+
+  <!-- Empty state -->
+  <div class="empty-sedes" id="empty-sedes" style="display:none;">
+    <i class="bi bi-geo-alt"></i>
+    <p>No se encontraron sedes con esos filtros.</p>
+  </div>
+
+  <!-- Mapa -->
+  <div class="mb-2">
+    <p class="section-title">Mapa de sedes</p>
+  </div>
+  <div id="mapa-sedes"></div>
+
+</div>
+
+{% endblock %}
+
+{% block js_extra %}
+{{ sedes|json_script:"sedes-data" }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ── Datos de sedes (vienen de Django, solo sedes activas) ──
+const SEDES = JSON.parse(document.getElementById('sedes-data').textContent);
+
+// Escapa texto antes de insertarlo como HTML
+function esc(t) {
+  return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ── Estado ──
+let mapa = null;
+let marcadores = {};          // id de sede -> marcador
+let miUbicacion = null;       // [lat, lng] si el ciudadano la compartió
+let marcadorYo = null;
+
+const tieneUbicacion = s => s.lat != null && s.lng != null;
+
+function linkComoLlegar(s) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}`;
+}
+
+// Distancia en km entre dos puntos (fórmula de Haversine)
+function distanciaKm(a, b) {
+  const rad = x => x * Math.PI / 180;
+  const dLat = rad(b[0] - a[0]), dLng = rad(b[1] - a[1]);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.asin(Math.sqrt(h));
+}
+
+function formatoDistancia(km) {
+  return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(km < 10 ? 1 : 0)} km`;
+}
+
+// ── Filtros ──
+function inicializarFiltros() {
+  const deptos = [...new Set(SEDES.map(s => s.departamento))].sort();
+  const select = document.getElementById('filtro-depto');
+  deptos.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = d;
+    select.appendChild(opt);
+  });
+}
+
+// ── Cards ──
+function renderCards(sedes) {
+  const grid  = document.getElementById('grid-sedes');
+  const empty = document.getElementById('empty-sedes');
+  document.getElementById('contador-num').textContent = sedes.length;
+
+  if (sedes.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = sedes.map(s => `
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="sede-card" id="card-${s.id}">
+        <div>
+          ${s.turnos_online ? '<span class="sede-turnos-online"><i class="bi bi-calendar-check"></i> Turnos online de DNI</span>' : ''}
+          ${s.distancia != null ? `<span class="sede-distancia"><i class="bi bi-signpost-2"></i> a ${formatoDistancia(s.distancia)}</span>` : ''}
+        </div>
+        <div class="sede-nombre">
+          <i class="bi bi-building"></i>
+          ${esc(s.nombre)}
+        </div>
+        <div class="sede-dato">
+          <i class="bi bi-geo-alt"></i>
+          <span>${esc(s.direccion)}, ${esc(s.departamento)}</span>
+        </div>
+        ${s.referencia ? `
+        <div class="sede-dato">
+          <i class="bi bi-signpost"></i>
+          <span>${esc(s.referencia)}</span>
+        </div>` : ''}
+        <div class="sede-dato">
+          <i class="bi bi-clock"></i>
+          <span>${esc(s.horario)}</span>
+        </div>
+        ${tieneUbicacion(s) ? `
+        <div class="sede-acciones">
+          <button type="button" class="btn-ver-mapa" onclick="verEnMapa(${s.id})">
+            <i class="bi bi-map me-1"></i>Ver en mapa
+          </button>
+          <a class="btn-ver-mapa btn-como-llegar" href="${linkComoLlegar(s)}" target="_blank" rel="noopener">
+            <i class="bi bi-sign-turn-right me-1"></i>Cómo llegar
+          </a>
+        </div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Mapa ──
+function inicializarMapa() {
+  mapa = L.map('mapa-sedes').setView([-27.7951, -64.2615], 7);
+  // OpenStreetMap exige recibir el origen del sitio (Referer); sin esto
+  // los mosaicos responden "403 Access blocked".
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(mapa);
+}
+
+const iconoSede = L.divIcon({
+  html: `<div style="
+    background:var(--rc-red,#c8102e);
+    width:32px;height:32px;
+    border-radius:50% 50% 50% 0;
+    transform:rotate(-45deg);
+    border:3px solid #fff;
+    box-shadow:0 2px 8px rgba(0,0,0,.3);
+  "></div>`,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+  className: ''
+});
+
+function pintarMarcadores(sedes) {
+  Object.values(marcadores).forEach(m => mapa.removeLayer(m));
+  marcadores = {};
+
+  const conUbicacion = sedes.filter(tieneUbicacion);
+  conUbicacion.forEach(s => {
+    marcadores[s.id] = L.marker([s.lat, s.lng], { icon: iconoSede })
+      .addTo(mapa)
+      .bindPopup(`
+        <strong style="font-size:14px;">${esc(s.nombre)}</strong><br>
+        <span style="font-size:12px;color:#555;">${esc(s.direccion)}</span><br>
+        ${s.referencia ? `<span style="font-size:12px;color:#555;">${esc(s.referencia)}</span><br>` : ''}
+        <span style="font-size:12px;color:#555;">
+          <i class="bi bi-clock" style="color:#c8102e;"></i> ${esc(s.horario)}
+        </span><br>
+        <a href="${linkComoLlegar(s)}" target="_blank" rel="noopener"
+          style="display:inline-block;margin-top:6px;font-size:12.5px;font-weight:700;color:#c8102e;">
+          <i class="bi bi-sign-turn-right"></i> Cómo llegar
+        </a>
+      `);
+  });
+
+  // Encuadrar las sedes visibles (y la ubicación del ciudadano, si la compartió)
+  const puntos = conUbicacion.map(s => [s.lat, s.lng]);
+  if (miUbicacion) puntos.push(miUbicacion);
+  if (puntos.length === 1) mapa.setView(puntos[0], 15);
+  else if (puntos.length > 1) mapa.fitBounds(puntos, { padding: [40, 40], maxZoom: 15 });
+}
+
+// ── Filtrar / ordenar ──
+function filtrar() {
+  const texto = document.getElementById('filtro-nombre').value.toLowerCase();
+  const depto = document.getElementById('filtro-depto').value;
+
+  let lista = SEDES.filter(s => {
+    const coincideTexto = !texto ||
+      s.nombre.toLowerCase().includes(texto) ||
+      s.direccion.toLowerCase().includes(texto) ||
+      (s.referencia || '').toLowerCase().includes(texto);
+    const coincideDepto = !depto || s.departamento === depto;
+    return coincideTexto && coincideDepto;
+  });
+
+  if (miUbicacion) {
+    lista = lista
+      .map(s => ({ ...s, distancia: tieneUbicacion(s) ? distanciaKm(miUbicacion, [s.lat, s.lng]) : null }))
+      .sort((a, b) => (a.distancia ?? Infinity) - (b.distancia ?? Infinity));
+  }
+
+  renderCards(lista);
+  pintarMarcadores(lista);
+}
+
+function limpiarFiltros() {
+  document.getElementById('filtro-nombre').value = '';
+  document.getElementById('filtro-depto').value = '';
+  filtrar();
+}
+
+// ── Ver sede en el mapa ──
+function verEnMapa(id) {
+  const sede = SEDES.find(s => s.id === id);
+  if (!sede || !tieneUbicacion(sede)) return;
+
+  document.querySelectorAll('.sede-card').forEach(c => c.classList.remove('resaltada'));
+  document.getElementById(`card-${id}`)?.classList.add('resaltada');
+
+  mapa.setView([sede.lat, sede.lng], 16, { animate: true });
+  marcadores[id]?.openPopup();
+  document.getElementById('mapa-sedes').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ── Sede más cercana (la ubicación queda solo en el navegador del ciudadano) ──
+function buscarCercana() {
+  const aviso = document.getElementById('aviso-ubicacion');
+  const btn   = document.getElementById('btn-cercana');
+  const mostrar = msg => { aviso.textContent = msg; aviso.style.display = 'block'; };
+
+  if (!navigator.geolocation) { mostrar('Tu navegador no permite obtener la ubicación.'); return; }
+  btn.disabled = true;
+  mostrar('Obteniendo tu ubicación…');
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    btn.disabled = false;
+    btn.classList.add('activo');
+    miUbicacion = [pos.coords.latitude, pos.coords.longitude];
+    if (marcadorYo) mapa.removeLayer(marcadorYo);
+    marcadorYo = L.circleMarker(miUbicacion, {
+      radius: 8, color: '#fff', weight: 3, fillColor: '#1a73e8', fillOpacity: 1
+    }).addTo(mapa).bindPopup('Estás acá');
+    filtrar();
+    mostrar('Sedes ordenadas por cercanía. Tu ubicación no se guarda ni se envía al servidor.');
+    document.querySelector('.sede-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, () => {
+    btn.disabled = false;
+    mostrar('No pudimos obtener tu ubicación. Revisá que hayas dado permiso al navegador.');
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+// ── Eventos ──
+document.getElementById('filtro-nombre').addEventListener('input', filtrar);
+document.getElementById('filtro-depto').addEventListener('change', filtrar);
+document.getElementById('btn-cercana').addEventListener('click', buscarCercana);
+
+// ── Inicializar ──
+inicializarFiltros();
+inicializarMapa();
+filtrar();
+</script>
+{% endblock %}

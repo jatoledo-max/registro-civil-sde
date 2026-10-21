@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Matrimonio – Registro Civil{% endblock %}
+{% block nav_tramites %}active{% endblock %}
+
+{% block contenido %}
+
+  <div class="tramite-hero">
+    <div class="container">
+      <div class="d-flex align-items-center gap-3">
+        <div class="tramite-hero-icon">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div>
+          <p class="tramite-hero-cat mb-0">Trámites principales</p>
+          <h1 class="tramite-hero-title mb-0">Matrimonio</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <div class="row g-4">
+
+      <div class="col-lg-8">
+
+        <div class="tramite-card mb-4">
+          <p class="tramite-intro mb-0">
+            El matrimonio puede iniciarse de manera <strong>digital</strong> o <strong>presencial</strong>.
+            La modalidad digital permite que uno de los contrayentes inicie el trámite desde el portal
+            Mi Registro Civil.
+          </p>
+        </div>
+
+        <div class="tramite-card mb-4">
+          <h2 class="tramite-section-title">
+            <i class="bi bi-clipboard-check me-2"></i>Requisitos
+          </h2>
+          <ul class="tramite-list">
+            <li>Ser mayores de edad.</li>
+            <li>Presentar DNI vigente de ambos contrayentes.</li>
+            <li>Presentar 2 testigos con DNI vigente.</li>
+            <li>No tener impedimentos legales.</li>
+          </ul>
+        </div>
+
+        <div class="tramite-card mb-4">
+          <h2 class="tramite-section-title">
+            <i class="bi bi-building me-2"></i>¿Cómo se inicia?
+          </h2>
+          <ul class="tramite-list">
+            <li><strong>Digital:</strong> uno de los contrayentes inicia desde el portal Mi Registro Civil.</li>
+            <li><strong>Presencial:</strong> solicitar turno previo en el Registro Civil más cercano.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="col-lg-4">
+        <div class="tramite-sidebar-card mb-3">
+          <h6 class="sidebar-label"><i class="bi bi-cash-coin me-2"></i>Costos</h6>
+          <ul class="list-unstyled small mb-0">
+            <li class="mb-2 d-flex justify-content-between">
+              <span>Día hábil</span>
+              <strong>$27.090</strong>
+            </li>
+            <li class="d-flex justify-content-between">
+              <span>Día inhábil</span>
+              <strong>$85.140</strong>
+            </li>
+          </ul>
+        </div>
+        <div class="tramite-sidebar-card mb-3">
+          <h6 class="sidebar-label"><i class="bi bi-info-circle me-2"></i>Modalidad</h6>
+          <span class="badge bg-rc-red me-1">Presencial</span>
+          <span class="badge bg-secondary">Digital</span>
+        </div>
+        <!-- <div class="tramite-sidebar-card" style="background:rgba(200,16,46,.04);border-color:rgba(200,16,46,.2);">
+          <h6 class="sidebar-label"><i class="bi bi-calendar-check-fill me-2"></i>Turno previo</h6>
+          <p class="small mb-3">Para la modalidad presencial necesitás turno previo.</p>
+          <a href="#" class="btn-rc">Solicitar turno</a>
+        </div> -->
+      </div>
+
+    </div>
+  </div>
+
+{% endblock %}

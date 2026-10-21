@@ -1,0 +1,237 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    {% block titulo %}Registro Civil – Santiago del Estero{% endblock %}
+    </title>
+    <link rel="icon" type="image/png" href="{% static 'img/favicon-rc.png' %}"/>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/style-1.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/tramites.css' %}"/>
+
+    {% block css_extra %}{% endblock %}
+    <script>
+      // Prefijo del sitio (vacío en la raíz, ej.: "/registro-civil" en un subdirectorio)
+      window.RC = { base: "{{ url_base }}", csrfCookie: "{{ csrf_cookie_name }}" };
+      window.RC.url = function (ruta) { return window.RC.base + ruta; };
+    </script>
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <!-- NAVBAR -->
+      <header class="navbar-rc">
+        <!-- Logo RC — sin link oculto al login -->
+<a href="{% url 'inicio' %}" title="Registro Civil" 
+   style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+  <img src="{% static 'img/logo-rc.webp' %}" width="52" height="52" 
+       alt="Registro Civil" style="height:52px;width:auto;"/>
+  <div class="navbar-brand-text" style="line-height:1.1;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;
+                font-weight:800;color:var(--rc-red);letter-spacing:1.5px;
+                text-transform:uppercase;">Registro Civil</div>
+    <div style="font-size:10px;color:#888;font-weight:600;
+                letter-spacing:2px;text-transform:uppercase;">
+      Santiago del Estero
+    </div>
+  </div>
+</a>
+
+<button id="btn-menu" type="button" aria-label="Abrir menú" aria-controls="nav-links" aria-expanded="false" style="
+  display:none;
+  background:none; border:none; cursor:pointer;
+  font-size:26px; color:var(--rc-red); padding:4px 8px;
+">
+  <i class="bi bi-list" id="hamburger-icon"></i>
+</button>
+
+<nav class="nav-links" id="nav-links">
+  <a href="{% url 'inicio' %}" class="{% block nav_inicio %}{% endblock %}">Inicio</a>
+  <a href="{% url 'tramites' %}" class="{% block nav_tramites %}{% endblock %}">Trámites</a>
+  <a href="{% url 'sedes' %}" class="{% block nav_sedes %}{% endblock %}">Sedes</a>
+  <a href="#" class="nav-turno" data-bs-toggle="modal" data-bs-target="#modalTurno">
+    <i class="bi bi-calendar-check-fill"></i> Solicitar turno
+  </a>
+  <a href="https://mjusticia.sde.gob.ar/" target="_blank" rel="noopener"
+    class="logo-ministerio-mobile">
+    <img src="{% static 'img/logo.png' %}" alt="Ministerio de Justicia"
+        style="height:36px;width:auto;"/>
+  </a>
+</nav>
+
+<!-- Logo Ministerio de Justicia — link externo -->
+<a href="https://mjusticia.sde.gob.ar/" target="_blank" rel="noopener" class="logo-ministerio-wrap" title="Ministerio de Justicia y Derechos Humanos">
+  <img src="{% static 'img/logo.png' %}" 
+      alt="Ministerio de Justicia y Derechos Humanos" 
+      style="height:45px;width:auto;"/>
+</a>
+      </header>
+
+      <!-- CONTENIDO -->
+      <main class="page-content">
+  {% if request.path_info != '/' %}
+  <div class="volver-wrap">
+    <a href="{% url 'inicio' %}" class="btn-volver" id="btn-volver">
+      <i class="bi bi-arrow-left-circle-fill"></i> Volver
+    </a>
+  </div>
+  {% endif %}
+  {% block contenido %}{% endblock %}
+</main>
+
+      <!-- FOOTER -->
+      <footer>
+        <div class="row g-4">
+          <div class="col-12 col-md-4 reveal">
+            <div class="footer-brand">
+              <a href="https://mjusticia.sde.gob.ar/" target="_blank" rel="noopener"
+                class="footer-logo" title="Ministerio de Justicia y Derechos Humanos">
+                <img src="{% static 'img/logo.png' %}" alt="Ministerio de Justicia y Derechos Humanos"
+                  style="height:54px;width:auto;"/>
+              </a>
+            </div>
+            <p style="font-size: 12px; color: #aaa; margin-top: 8px">
+              Dirección General del Registro Civil y Capacidad de las Personas.
+            </p>
+          </div>
+          <div class="col-6 col-md-3 reveal delay-1">
+            <h6>Institucional</h6>
+            <a href="{% url 'mision' %}"><i class="bi bi-chevron-right"></i>Misión</a>
+            <a href="https://mjusticia.sde.gob.ar/" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i>Ministerio de Justicia</a>
+          </div>
+          <div class="col-6 col-md-5 reveal delay-2">
+            <h6>Enlaces de Interés</h6>
+            <a href="https://www.renaper.gob.ar" target="_blank" rel="noopener"
+              ><i class="bi bi-box-arrow-up-right"></i>RENAPER</a
+            >
+            <a
+              href="https://www.argentina.gob.ar/miargentina"
+              target="_blank"
+              rel="noopener"
+              ><i class="bi bi-box-arrow-up-right"></i>Mi Argentina</a
+            >
+            <a
+              href="https://tad.sde.gob.ar/tramitesadistancia/tad-publico"
+              target="_blank"
+              rel="noopener"
+              ><i class="bi bi-box-arrow-up-right"></i>Trámites a Distancia</a
+            >
+          </div>
+        </div>
+        <hr class="footer-divider" />
+        <p class="footer-bottom">
+          © 2026 Registro Civil – Gobierno de la Provincia de Santiago del
+          Estero. Todos los derechos reservados.
+        </p>
+      </footer>
+    </div>
+
+<!-- Modal noticias -->
+<div class="modal fade" id="modalNoticia" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="border-radius:12px;overflow:hidden;">
+      <div class="modal-header modal-header-rc" style="border:none;padding:16px 20px;">
+        <h5 class="modal-title fw-bold" id="modalNoticiaTitulo">Noticia</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+          style="filter:invert(1) brightness(2);" aria-label="Cerrar"></button>
+      </div>
+      <!-- Imagen responsive -->
+      <div id="modalNoticiaImgWrap" style="width:100%;max-height:280px;overflow:hidden;">
+        <img id="modalNoticiaImg" src="" alt="Imagen de la noticia"
+          style="width:100%;height:280px;object-fit:cover;display:block;"/>
+      </div>
+      <div class="modal-body" style="padding:24px 28px;">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span id="modalNoticiaTag" class="news-tag"></span>
+          <span class="text-muted" style="font-size:13px;">
+            <i class="bi bi-calendar3 me-1"></i>
+            <span id="modalNoticiaFecha"></span>
+          </span>
+        </div>
+        <p id="modalNoticiaCuerpo" style="white-space:pre-line;line-height:1.9;font-size:15px;font-weight:500;color:#333;"></p>
+      </div>
+      <div class="modal-footer" style="border-top:1px solid #eee;padding:12px 20px;">
+        <button class="btn-rc" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+  (function () {
+    const btnMenu = document.getElementById('btn-menu');
+    const nav     = document.getElementById('nav-links');
+    const icon    = document.getElementById('hamburger-icon');
+
+    function setMenu(abierto) {
+      nav.classList.toggle('open', abierto);
+      icon.className = abierto ? 'bi bi-x-lg' : 'bi bi-list';
+      btnMenu.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+      btnMenu.setAttribute('aria-label', abierto ? 'Cerrar menú' : 'Abrir menú');
+    }
+
+    btnMenu?.addEventListener('click', () => setMenu(!nav.classList.contains('open')));
+
+    // Cerrar al hacer clic en un link, fuera del menú o con Escape
+    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+    document.addEventListener('click', e => {
+      if (nav.classList.contains('open') && !nav.contains(e.target) && !btnMenu.contains(e.target)) setMenu(false);
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 767) setMenu(false); });
+
+    // "Volver": vuelve atrás solo si se llegó desde este mismo sitio; si no, va al inicio
+    document.getElementById('btn-volver')?.addEventListener('click', e => {
+      if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) {
+        e.preventDefault();
+        history.back();
+      }
+    });
+  })();
+    </script>
+    <script src="{% static 'js/buscador.js' %}"></script>
+    <script src="{% static 'js/noticias.js' %}"></script>
+    {% include 'turnos.html' %}
+    <script src="{% static 'js/turnos.js' %}"></script>
+
+    {% block js_extra %}{% endblock %}
+
+    <script>
+    /* ── Scroll animations — Intersection Observer ── */
+    (function () {
+      const io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -32px 0px' }
+      );
+      document.querySelectorAll('.reveal').forEach(function (el) {
+        io.observe(el);
+      });
+    })();
+    </script>
+
+  {% include "chatbot.html" %}
+
+
+  </body>
+</html>

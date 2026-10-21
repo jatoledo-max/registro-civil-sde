@@ -1,0 +1,166 @@
+[
+    {
+        "model": "tramites_app.categoriatramite",
+        "pk": 1,
+        "fields": {
+            "nombre": "Nacimiento",
+            "icono": "bi-person-fill-add",
+            "orden": 1
+        }
+    },
+    {
+        "model": "tramites_app.categoriatramite",
+        "pk": 2,
+        "fields": {
+            "nombre": "Identificación",
+            "icono": "bi-person-vcard-fill",
+            "orden": 2
+        }
+    },
+    {
+        "model": "tramites_app.categoriatramite",
+        "pk": 3,
+        "fields": {
+            "nombre": "Matrimonio",
+            "icono": "bi-people-fill",
+            "orden": 3
+        }
+    },
+    {
+        "model": "tramites_app.categoriatramite",
+        "pk": 4,
+        "fields": {
+            "nombre": "Defunción",
+            "icono": "bi-file-earmark-medical-fill",
+            "orden": 4
+        }
+    },
+    {
+        "model": "tramites_app.tramite",
+        "pk": 1,
+        "fields": {
+            "categoria": 1,
+            "nombre": "Inscripción de Nacimiento",
+            "descripcion": "Registro del nacimiento de un recién nacido dentro de los 40 días corridos.",
+            "slug": "nacimiento",
+            "icono": "bi-file-earmark-person",
+            "estado": "publicado",
+            "creado_por": null,
+            "aprobado_por": null,
+            "fecha_creacion": "2026-01-01T00:00:00Z",
+            "fecha_publicacion": "2026-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tramites_app.tramite",
+        "pk": 2,
+        "fields": {
+            "categoria": 2,
+            "nombre": "DNI – Actualización 5-8 años",
+            "descripcion": "Renovación obligatoria del DNI para niños de 5 a 8 años.",
+            "slug": "dni-5-8",
+            "icono": "bi-person-fill",
+            "estado": "publicado",
+            "creado_por": null,
+            "aprobado_por": null,
+            "fecha_creacion": "2026-01-01T00:00:00Z",
+            "fecha_publicacion": "2026-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tramites_app.tramite",
+        "pk": 3,
+        "fields": {
+            "categoria": 2,
+            "nombre": "DNI – Actualización 14 años",
+            "descripcion": "Renovación obligatoria del DNI al cumplir 14 años.",
+            "slug": "dni-14",
+            "icono": "bi-person-fill",
+            "estado": "publicado",
+            "creado_por": null,
+            "aprobado_por": null,
+            "fecha_creacion": "2026-01-01T00:00:00Z",
+            "fecha_publicacion": "2026-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tramites_app.tramite",
+        "pk": 4,
+        "fields": {
+            "categoria": 2,
+            "nombre": "DNI – Cambio de domicilio",
+            "descripcion": "Actualización del domicilio en el DNI.",
+            "slug": "dni-domicilio",
+            "icono": "bi-house-fill",
+            "estado": "publicado",
+            "creado_por": null,
+            "aprobado_por": null,
+            "fecha_creacion": "2026-01-01T00:00:00Z",
+            "fecha_publicacion": "2026-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tramites_app.tramite",
+        "pk": 5,
+        "fields": {
+            "categoria": 2,
+            "nombre": "DNI – Nuevo ejemplar",
+            "descripcion": "Solicitud de nuevo DNI por robo, extravío o deterioro.",
+            "slug": "dni-nuevo",
+            "icono": "bi-person-badge-fill",
+            "estado": "publicado",
+            "creado_por": null,
+            "aprobado_por": null,
+            "fecha_creacion": "2026-01-01T00:00:00Z",
+            "fecha_publicacion": "2026-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tramites_app.tramite",
+        "pk": 6,
+        "fields": {
+            "categoria": 2,
+            "nombre": "Pasaporte",
+            "descripcion": "Documento para viajar al exterior emitido por RENAPER.",
+            "slug": "pasaporte",
+            "icono": "bi-passport",
+            "estado": "publicado",
+            "creado_por": null,
+            "aprobado_por": null,
+            "fecha_creacion": "2026-01-01T00:00:00Z",
+            "fecha_publicacion": "2026-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tramites_app.tramite",
+        "pk": 7,
+        "fields": {
+            "categoria": 3,
+            "nombre": "Matrimonio Civil",
+            "descripcion": "Celebración y registro del matrimonio civil.",
+            "slug": "matrimonio",
+            "icono": "bi-heart",
+            "estado": "publicado",
+            "creado_por": null,
+            "aprobado_por": null,
+            "fecha_creacion": "2026-01-01T00:00:00Z",
+            "fecha_publicacion": "2026-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tramites_app.tramite",
+        "pk": 8,
+        "fields": {
+            "categoria": 4,
+            "nombre": "Inscripción de Defunción",
+            "descripcion": "Registro del fallecimiento dentro de las 48 horas hábiles.",
+            "slug": "defuncion",
+            "icono": "bi-file-earmark-medical",
+            "estado": "publicado",
+            "creado_por": null,
+            "aprobado_por": null,
+            "fecha_creacion": "2026-01-01T00:00:00Z",
+            "fecha_publicacion": "2026-01-01T00:00:00Z"
+        }
+    }
+]

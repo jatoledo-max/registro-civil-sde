@@ -1,0 +1,281 @@
+<!-- ── Chatbot Widget (RegIna) ─────────────────────────────────── -->
+<style>
+  #chat-btn {
+    position: fixed; bottom: 24px; right: 24px; z-index: 1040;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #c8102e; color: #fff; border: none;
+    box-shadow: 0 4px 16px rgba(200,16,46,.45);
+    font-size: 24px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .2s, box-shadow .2s;
+  }
+  #chat-btn:hover { transform: scale(1.08); box-shadow: 0 6px 22px rgba(200,16,46,.55); }
+  #chat-btn:focus-visible { outline: 3px solid #1c1c1c; outline-offset: 3px; }
+
+  #chat-box {
+    position: fixed; bottom: 92px; right: 24px; z-index: 1040;
+    width: 360px; max-width: calc(100vw - 32px);
+    height: 520px; max-height: calc(100vh - 120px); max-height: calc(100dvh - 120px);
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    display: none; flex-direction: column; overflow: hidden;
+    font-family: 'Barlow', sans-serif;
+  }
+  #chat-box.open { display: flex; }
+
+  #chat-header {
+    background: #c8102e; color: #fff;
+    padding: 14px 16px; font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+  }
+  #chat-header .chat-title { flex: 1; line-height: 1.2; }
+  #chat-header small { display: block; font-weight: 500; font-size: 11px; opacity: .85; }
+  #chat-header button {
+    background: none; border: none; color: #fff; font-size: 18px;
+    cursor: pointer; padding: 2px 6px; line-height: 1; border-radius: 4px;
+  }
+  #chat-close { font-size: 24px; }
+  #chat-header button:hover { background: rgba(255,255,255,.15); }
+
+  #chat-messages {
+    flex: 1; overflow-y: auto; padding: 14px;
+    display: flex; flex-direction: column; gap: 10px;
+    overscroll-behavior: contain;
+  }
+  .chat-msg {
+    max-width: 85%; padding: 9px 13px; border-radius: 12px;
+    font-size: 14px; line-height: 1.5; overflow-wrap: anywhere;
+  }
+  .chat-msg.bot  { background: #f0f2f5; color: #1c1c1c; align-self: flex-start; border-bottom-left-radius: 3px; }
+  .chat-msg.user { background: #c8102e; color: #fff;    align-self: flex-end;   border-bottom-right-radius: 3px; white-space: pre-wrap; }
+  .chat-msg.error { background: #fff4f4; color: #a00d24; border: 1px solid rgba(200,16,46,.2); }
+  .chat-msg ul { margin: 4px 0; padding-left: 18px; }
+  .chat-msg p { margin: 0 0 6px; }
+  .chat-msg p:last-child { margin-bottom: 0; }
+  .chat-msg a { color: #c8102e; font-weight: 600; }
+
+  .chat-typing { display: inline-flex; gap: 4px; padding: 4px 0; }
+  .chat-typing span {
+    width: 7px; height: 7px; border-radius: 50%; background: #999;
+    animation: chat-dot 1.2s infinite ease-in-out;
+  }
+  .chat-typing span:nth-child(2) { animation-delay: .15s; }
+  .chat-typing span:nth-child(3) { animation-delay: .3s; }
+  @keyframes chat-dot { 0%, 80%, 100% { opacity: .3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+
+  #chat-sugerencias { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; }
+  #chat-sugerencias button {
+    background: #fff; border: 1.5px solid rgba(200,16,46,.35); color: #c8102e;
+    border-radius: 999px; padding: 5px 11px; font-size: 12.5px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  #chat-sugerencias button:hover { background: rgba(200,16,46,.06); }
+
+  #chat-input-row {
+    display: flex; border-top: 1px solid #eee; padding: 10px 12px; gap: 8px; flex-shrink: 0;
+  }
+  #chat-input {
+    flex: 1; min-width: 0; border: 1.5px solid #e5e7eb; border-radius: 8px;
+    padding: 8px 12px; font-size: 14px; font-family: inherit; outline: none;
+    transition: border-color .2s;
+  }
+  #chat-input:focus { border-color: #c8102e; }
+  #chat-send {
+    background: #c8102e; color: #fff; border: none;
+    border-radius: 8px; padding: 8px 14px; cursor: pointer;
+    font-size: 16px; transition: background .2s; flex-shrink: 0;
+  }
+  #chat-send:hover { background: #a00d24; }
+  #chat-send:disabled { opacity: .5; cursor: not-allowed; }
+  #chat-contador { font-size: 11px; color: #999; text-align: right; padding: 0 14px 6px; display: none; }
+  #chat-contador.visible { display: block; }
+
+  /* ── Celulares: el chat ocupa toda la pantalla ── */
+  @media (max-width: 575.98px) {
+    #chat-btn { bottom: 16px; right: 16px; width: 52px; height: 52px; font-size: 22px; }
+    #chat-box {
+      inset: 0; width: 100%; max-width: 100%;
+      height: 100%; max-height: 100%; border-radius: 0;
+    }
+    #chat-input { font-size: 16px; } /* evita el zoom automático de iOS */
+    body.chat-abierto { overflow: hidden; }
+    body.chat-abierto #chat-btn { display: none; }
+  }
+</style>
+
+<!-- Botón flotante -->
+<button id="chat-btn" type="button" title="RegIna – Asistente virtual"
+  aria-label="Abrir asistente virtual" aria-controls="chat-box" aria-expanded="false">
+  <i class="bi bi-chat-dots-fill" aria-hidden="true"></i>
+</button>
+
+<!-- Ventana de chat -->
+<div id="chat-box" role="dialog" aria-label="Asistente virtual RegIna">
+  <div id="chat-header">
+    <i class="bi bi-robot" aria-hidden="true"></i>
+    <div class="chat-title">RegIna – Asistente virtual<small>Registro Civil · Santiago del Estero</small></div>
+    <button id="chat-reset" type="button" title="Nueva conversación" aria-label="Nueva conversación">
+      <i class="bi bi-arrow-counterclockwise"></i>
+    </button>
+    <button id="chat-close" type="button" title="Cerrar" aria-label="Cerrar asistente">&times;</button>
+  </div>
+  <div id="chat-messages" aria-live="polite"></div>
+  <div id="chat-sugerencias">
+    <button type="button">¿Cómo saco un turno?</button>
+    <button type="button">Horarios de atención</button>
+    <button type="button">Requisitos para el DNI</button>
+    <button type="button">¿Dónde están las sedes?</button>
+  </div>
+  <div id="chat-contador"></div>
+  <form id="chat-input-row" autocomplete="off">
+    <label for="chat-input" class="visually-hidden">Escribí tu consulta</label>
+    <input id="chat-input" type="text" placeholder="Escribí tu consulta..." maxlength="500"/>
+    <button id="chat-send" type="submit" aria-label="Enviar"><i class="bi bi-send-fill"></i></button>
+  </form>
+</div>
+
+<script>
+  (function () {
+    const MAX       = 500;
+    const SALUDO    = '¡Hola! Soy **RegIna**, la asistente virtual del Registro Civil. ¿En qué puedo ayudarte?';
+    const btn       = document.getElementById('chat-btn');
+    const box       = document.getElementById('chat-box');
+    const msgs      = document.getElementById('chat-messages');
+    const form      = document.getElementById('chat-input-row');
+    const input     = document.getElementById('chat-input');
+    const send      = document.getElementById('chat-send');
+    const contador  = document.getElementById('chat-contador');
+    const sugerencias = document.getElementById('chat-sugerencias');
+    let historial   = [];   // [{role: 'user'|'assistant', content}]
+    let esperando   = false;
+
+    // Formato seguro: escapa HTML y luego aplica **negrita**, listas, enlaces y saltos de línea
+    function formatear(texto) {
+      const esc = texto.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      const inline = t => t
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/(https?:\/\/[^\s<)]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+      let html = '', lista = false;
+      esc.split('\n').forEach(linea => {
+        const item = linea.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)$/);
+        if (item) {
+          if (!lista) { html += '<ul>'; lista = true; }
+          html += '<li>' + inline(item[1]) + '</li>';
+        } else {
+          if (lista) { html += '</ul>'; lista = false; }
+          if (linea.trim()) html += '<p>' + inline(linea) + '</p>';
+        }
+      });
+      if (lista) html += '</ul>';
+      return html;
+    }
+
+    function addMsg(texto, clase) {
+      const d = document.createElement('div');
+      d.className = 'chat-msg ' + clase;
+      if (clase === 'user') d.textContent = texto;
+      else d.innerHTML = formatear(texto);
+      msgs.appendChild(d);
+      msgs.scrollTop = msgs.scrollHeight;
+      return d;
+    }
+
+    function addTyping() {
+      const d = document.createElement('div');
+      d.className = 'chat-msg bot';
+      d.setAttribute('aria-label', 'RegIna está escribiendo');
+      d.innerHTML = '<span class="chat-typing"><span></span><span></span><span></span></span>';
+      msgs.appendChild(d);
+      msgs.scrollTop = msgs.scrollHeight;
+      return d;
+    }
+
+    function reiniciar() {
+      historial = [];
+      msgs.innerHTML = '';
+      addMsg(SALUDO, 'bot');
+      sugerencias.style.display = 'flex';
+    }
+
+    function abrir() {
+      box.classList.add('open');
+      document.body.classList.add('chat-abierto');
+      btn.setAttribute('aria-expanded', 'true');
+      if (window.matchMedia('(min-width: 576px)').matches) input.focus();
+    }
+    function cerrar() {
+      box.classList.remove('open');
+      document.body.classList.remove('chat-abierto');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.focus();
+    }
+
+    btn.addEventListener('click', function () {
+      box.classList.contains('open') ? cerrar() : abrir();
+    });
+    document.getElementById('chat-close').addEventListener('click', cerrar);
+    document.getElementById('chat-reset').addEventListener('click', function () {
+      if (!esperando) reiniciar();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && box.classList.contains('open')) cerrar();
+    });
+
+    input.addEventListener('input', function () {
+      const n = input.value.length;
+      contador.textContent = n + '/' + MAX;
+      contador.classList.toggle('visible', n > MAX * 0.8);
+    });
+
+    sugerencias.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () { enviar(b.textContent); });
+    });
+
+    async function enviar(textoSugerido) {
+      const texto = (textoSugerido || input.value).trim();
+      if (!texto || esperando) return;
+      if (texto.length > MAX) {
+        addMsg('Tu mensaje es demasiado largo (máximo ' + MAX + ' caracteres).', 'bot error');
+        return;
+      }
+
+      sugerencias.style.display = 'none';
+      addMsg(texto, 'user');
+      input.value = '';
+      contador.classList.remove('visible');
+      esperando = true;
+      send.disabled = true;
+      const typing = addTyping();
+
+      try {
+        const r = await fetch(RC.url('/api/chatbot/'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mensaje: texto, historial: historial.slice(-8) }),
+        });
+        const data = await r.json().catch(function () { return {}; });
+        typing.remove();
+
+        if (r.ok && data.respuesta) {
+          addMsg(data.respuesta, 'bot');
+          historial.push({ role: 'user', content: texto }, { role: 'assistant', content: data.respuesta });
+        } else {
+          addMsg(data.error || data.respuesta || 'No pude procesar tu consulta. Intentá de nuevo.', 'bot error');
+        }
+      } catch (e) {
+        typing.remove();
+        addMsg('Error de conexión. Revisá tu internet e intentá de nuevo.', 'bot error');
+      } finally {
+        esperando = false;
+        send.disabled = false;
+        if (window.matchMedia('(min-width: 576px)').matches) input.focus();
+      }
+    }
+
+    form.addEventListener('submit', function (e) { e.preventDefault(); enviar(); });
+
+    reiniciar();
+  })();
+</script>
+<!-- ── Fin Chatbot Widget ──────────────────────────────────────── -->

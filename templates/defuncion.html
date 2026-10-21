@@ -1,0 +1,100 @@
+{% extends 'base.html' %} 
+
+{% block titulo %}Inscripción de Defunciones –Registro Civil{% endblock %} 
+{% block nav_tramites %}active{% endblock %}
+
+{%block contenido %}
+
+<div class="tramite-hero">
+  <div class="container">
+    <div class="d-flex align-items-center gap-3">
+      <div class="tramite-hero-icon">
+        <i class="bi bi-file-earmark-medical-fill"></i>
+      </div>
+      <div>
+        <p class="tramite-hero-cat mb-0">Trámites principales</p>
+        <h1 class="tramite-hero-title mb-0">Inscripción de Defunciones</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="tramite-card mb-4">
+        <p class="tramite-intro mb-0">
+          Este trámite permite registrar el fallecimiento de una persona. Debe
+          realizarse dentro de las <strong>48 horas hábiles</strong> de ocurrido
+          el deceso.
+        </p>
+      </div>
+
+      <div class="tramite-card mb-4">
+        <h2 class="tramite-section-title">
+          <i class="bi bi-clipboard-check me-2"></i>Requisitos
+        </h2>
+        <ul class="tramite-list">
+          <li>Certificado médico de defunción (original).</li>
+          <li>DNI del fallecido.</li>
+          <li>DNI del solicitante.</li>
+          <li>
+            Realizar el trámite dentro de las 48 horas hábiles del
+            fallecimiento.
+          </li>
+        </ul>
+      </div>
+
+      <div class="tramite-card mb-4">
+        <h2 class="tramite-section-title">
+          <i class="bi bi-list-ol me-2"></i>Pasos para realizar el trámite
+        </h2>
+        <div class="tramite-steps">
+          <div class="tramite-step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              Contactar a la empresa funeraria habilitada.
+            </div>
+          </div>
+          <div class="tramite-step">
+            <div class="step-num">2</div>
+            <div class="step-body">Reunir la documentación requerida.</div>
+          </div>
+          <div class="tramite-step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              Presentarse en el Registro Civil con la documentación.
+            </div>
+          </div>
+          <div class="tramite-step">
+            <div class="step-num">4</div>
+            <div class="step-body">Obtener el acta de defunción.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="tramite-sidebar-card mb-3">
+        <h6 class="sidebar-label"><i class="bi bi-cash-coin me-2"></i>Costo</h6>
+        <p class="small mb-0">
+          El trámite es <strong>totalmente gratuito</strong>.
+        </p>
+      </div>
+      <div class="tramite-sidebar-card mb-3">
+        <h6 class="sidebar-label"><i class="bi bi-clock me-2"></i>Plazo</h6>
+        <p class="small mb-0">
+          Dentro de las <strong>48 horas hábiles</strong> del fallecimiento.
+        </p>
+      </div>
+      <div class="tramite-sidebar-card">
+        <h6 class="sidebar-label">
+          <i class="bi bi-info-circle me-2"></i>Modalidad
+        </h6>
+        <span class="badge bg-rc-red">Presencial</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

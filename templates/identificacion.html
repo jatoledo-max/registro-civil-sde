@@ -1,0 +1,97 @@
+{% extends 'base.html' %} 
+
+{% block titulo %}Identificación – Registro Civil{% endblock %}
+{% block nav_tramites %}active{% endblock %} 
+
+{% block contenido %}
+
+<div class="container py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'inicio' %}">Inicio</a></li>
+      <li class="breadcrumb-item active">Identificación</li>
+    </ol>
+  </nav>
+
+  <!-- Título de sección -->
+  <div class="d-flex align-items-center gap-2 mb-4">
+    <i
+      class="bi bi-person-vcard-fill"
+      style="font-size: 28px; color: var(--rc-red)"
+    ></i>
+    <h1 style="font-size: 26px; font-weight: 700; margin: 0">Identificación</h1>
+  </div>
+
+  <!-- Grilla de trámites -->
+  <div class="row g-3">
+    <!-- DNI 5-8 años -->
+    <div class="col-12 col-md-6">
+      <div class="tramite-card-simple">
+        <div class="tramite-icon"><i class="bi bi-person-fill"></i></div>
+        <div class="tramite-body">
+          <div class="tramite-titulo">DNI – Actualización 5-8 años</div>
+          <a href="{% url 'tramite_detalle' 'dni-5-8' %}" class="btn-rc mt-2"
+            >Ver trámite</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- DNI 14 años -->
+    <div class="col-12 col-md-6">
+      <div class="tramite-card-simple">
+        <div class="tramite-icon"><i class="bi bi-person-fill"></i></div>
+        <div class="tramite-body">
+          <div class="tramite-titulo">DNI – Actualización 14 años</div>
+          <a href="{% url 'tramite_detalle' 'dni-14' %}" class="btn-rc mt-2"
+            >Ver trámite</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- DNI cambio de domicilio -->
+    <div class="col-12 col-md-6">
+      <div class="tramite-card-simple">
+        <div class="tramite-icon"><i class="bi bi-house-fill"></i></div>
+        <div class="tramite-body">
+          <div class="tramite-titulo">DNI – Cambio de domicilio</div>
+          <a
+            href="{% url 'tramite_detalle' 'dni-domicilio' %}"
+            class="btn-rc mt-2"
+            >Ver trámite</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- DNI nuevo ejemplar -->
+    <div class="col-12 col-md-6">
+      <div class="tramite-card-simple">
+        <div class="tramite-icon"><i class="bi bi-person-badge-fill"></i></div>
+        <div class="tramite-body">
+          <div class="tramite-titulo">DNI – Nuevo ejemplar</div>
+          <a href="{% url 'tramite_detalle' 'dni-nuevo' %}" class="btn-rc mt-2"
+            >Ver trámite</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- PASAPORTE -->
+    <div class="col-12 col-md-6">
+      <div class="tramite-card-simple">
+        <div class="tramite-icon"><i class="bi bi-passport-fill"></i></div>
+        <div class="tramite-body">
+          <div class="tramite-titulo">Pasaporte</div>
+          <a href="{% url 'tramite_detalle' 'pasaporte' %}" class="btn-rc mt-2"
+            >Ver trámite</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

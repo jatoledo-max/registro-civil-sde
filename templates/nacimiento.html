@@ -1,0 +1,120 @@
+{% extends 'base.html' %} 
+
+{% block titulo %}Inscripción de Nacimientos –
+Registro Civil{% endblock %} {% block nav_tramites %}active{% endblock %} 
+
+{%block contenido %}
+
+<div class="tramite-hero">
+  <div class="container">
+    <div class="d-flex align-items-center gap-3">
+      <div class="tramite-hero-icon">
+        <i class="bi bi-person-fill-add"></i>
+      </div>
+      <div>
+        <p class="tramite-hero-cat mb-0">Trámites principales</p>
+        <h1 class="tramite-hero-title mb-0">Inscripción de Nacimientos</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="tramite-card mb-4">
+        <p class="tramite-intro mb-0">
+          Este trámite permite realizar la inscripción de nacimiento de un
+          recién nacido dentro del plazo de <strong>40 días corridos</strong> de
+          ocurrido el nacimiento.
+        </p>
+      </div>
+
+      <div class="tramite-card mb-4">
+        <h2 class="tramite-section-title">
+          <i class="bi bi-clipboard-check me-2"></i>Documentación requerida
+        </h2>
+        <ul class="tramite-list">
+          <li>Certificado médico de nacimiento original.</li>
+          <li>DNI de ambos progenitores.</li>
+          <li>Libreta de familia (si los padres están casados).</li>
+          <li>Extranjeros: DNI, pasaporte o documento vigente.</li>
+          <li>Sin documento: acreditar identidad con 2 testigos.</li>
+        </ul>
+      </div>
+
+      <div class="tramite-card mb-4">
+        <h2 class="tramite-section-title">
+          <i class="bi bi-exclamation-circle me-2"></i>Plazos importantes
+        </h2>
+        <ul class="tramite-list">
+          <li>
+            Dentro de los <strong>40 días corridos</strong>: inscripción normal.
+          </li>
+          <li>
+            Del <strong>día 41 al 60</strong>: inscripción de oficio con
+            certificado negativo de inscripción.
+          </li>
+        </ul>
+      </div>
+
+      <div class="tramite-card mb-4">
+        <h2 class="tramite-section-title">
+          <i class="bi bi-list-ol me-2"></i>Pasos para realizar el trámite
+        </h2>
+        <div class="tramite-steps">
+          <div class="tramite-step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              Solicitá un turno en el Registro Civil más cercano.
+            </div>
+          </div>
+          <div class="tramite-step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              Presentate con toda la documentación requerida.
+            </div>
+          </div>
+          <div class="tramite-step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              Se realiza la inscripción y se entrega el acta de nacimiento.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="tramite-sidebar-card mb-3">
+        <h6 class="sidebar-label"><i class="bi bi-cash-coin me-2"></i>Costo</h6>
+        <p class="small mb-0">
+          El trámite es <strong>totalmente gratuito</strong>.
+        </p>
+      </div>
+      <div class="tramite-sidebar-card mb-3">
+        <h6 class="sidebar-label">
+          <i class="bi bi-info-circle me-2"></i>Modalidad
+        </h6>
+        <span class="badge bg-rc-red">Presencial</span>
+      </div>
+      <!--  <div
+        class="tramite-sidebar-card"
+        style="
+          background: rgba(200, 16, 46, 0.04);
+          border-color: rgba(200, 16, 46, 0.2);
+        "
+      >
+        <h6 class="sidebar-label">
+          <i class="bi bi-calendar-check-fill me-2"></i>Turno previo
+        </h6>
+        <p class="small mb-3">
+          Para realizar este trámite necesitás turno previo.
+        </p>
+        <a href="#" class="btn-rc">Solicitar turno</a>
+      </div>-->
+    </div>
+  </div>
+</div>
+
+{% endblock %}

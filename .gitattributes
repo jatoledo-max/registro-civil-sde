@@ -1,0 +1,3 @@
+# Los scripts que corren dentro de Linux necesitan finales de línea LF
+*.sh text eol=lf
+Dockerfile text eol=lf

@@ -1,0 +1,235 @@
+<!-- Modal Solicitar Turno -->
+<div class="modal fade" id="modalTurno" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="border-radius:14px;overflow:hidden;">
+
+      <!-- Header -->
+      <div class="modal-header" style="background:var(--rc-red);border:none;padding:20px 28px;">
+        <div>
+          <h5 class="modal-title" style="color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;margin:0;">
+            <i class="bi bi-calendar-check-fill me-2"></i>Solicitar Turno
+          </h5>
+          <p style="color:rgba(255,255,255,.75);font-size:13px;margin:2px 0 0;">
+            Registro Civil – {{ sede_turnos.nombre|default:"Sede Central" }} · Santiago del Estero
+          </p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+          style="filter:invert(1) brightness(2);" aria-label="Cerrar"></button>
+      </div>
+
+      <!-- Indicador de pasos -->
+      <div style="background:#f8f9fa;padding:16px 28px;border-bottom:1px solid #e5e7eb;">
+        <div class="d-flex align-items-center justify-content-center gap-3">
+          <div class="turno-step-indicator" id="step-ind-1">
+            <div class="step-circle active">1</div>
+            <span>Trámite</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="turno-step-indicator" id="step-ind-2">
+            <div class="step-circle">2</div>
+            <span>Tus datos</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="turno-step-indicator" id="step-ind-3">
+            <div class="step-circle">3</div>
+            <span>Fecha y hora</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body" style="padding:28px;">
+
+        <!-- PASO 1: Elegir trámite -->
+        <div id="turno-paso-1">
+          <h6 style="font-weight:700;color:#1c1c1c;margin-bottom:16px;">
+            ¿Para qué trámite de DNI necesitás el turno?
+          </h6>
+          <p style="font-size:13px;color:#888;margin:-8px 0 14px;">
+            El turno online es exclusivo para trámites de DNI.
+          </p>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="turno-tramite-option">
+                <input type="radio" name="turno-tramite" value="dni-5-8"/>
+                <div class="turno-tramite-card">
+                  <i class="bi bi-person-fill"></i>
+                  <div>
+                    <div class="turno-tramite-nombre">DNI – Actualización 5-8 años</div>
+                    <div class="turno-tramite-desc">Renovación obligatoria para niños</div>
+                  </div>
+                </div>
+              </label>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="turno-tramite-option">
+                <input type="radio" name="turno-tramite" value="dni-14"/>
+                <div class="turno-tramite-card">
+                  <i class="bi bi-person-fill"></i>
+                  <div>
+                    <div class="turno-tramite-nombre">DNI – Actualización 14 años</div>
+                    <div class="turno-tramite-desc">Renovación obligatoria a los 14</div>
+                  </div>
+                </div>
+              </label>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="turno-tramite-option">
+                <input type="radio" name="turno-tramite" value="dni-domicilio"/>
+                <div class="turno-tramite-card">
+                  <i class="bi bi-house-fill"></i>
+                  <div>
+                    <div class="turno-tramite-nombre">DNI – Cambio de domicilio</div>
+                    <div class="turno-tramite-desc">Actualización de dirección</div>
+                  </div>
+                </div>
+              </label>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="turno-tramite-option">
+                <input type="radio" name="turno-tramite" value="dni-nuevo"/>
+                <div class="turno-tramite-card">
+                  <i class="bi bi-person-badge-fill"></i>
+                  <div>
+                    <div class="turno-tramite-nombre">DNI – Nuevo ejemplar</div>
+                    <div class="turno-tramite-desc">Por robo, extravío o deterioro</div>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div id="error-tramite" class="turno-error" style="display:none;">
+            <i class="bi bi-exclamation-circle-fill me-1"></i>
+            Seleccioná un trámite para continuar.
+          </div>
+        </div>
+
+        <!-- PASO 2: Datos personales -->
+        <div id="turno-paso-2" style="display:none;">
+          <h6 style="font-weight:700;color:#1c1c1c;margin-bottom:16px;">
+            Completá tus datos personales
+          </h6>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="turno-label" for="turno-nombre">Nombre y apellido <span style="color:var(--rc-red)">*</span></label>
+              <input type="text" id="turno-nombre" class="turno-input"
+                placeholder="Ej: María García" maxlength="100" autocomplete="name"/>
+              <div class="turno-field-error" id="turno-nombre-error"></div>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="turno-label" for="turno-dni">DNI <span style="color:var(--rc-red)">*</span></label>
+              <input type="text" id="turno-dni" class="turno-input"
+                placeholder="Ej: 32456789" maxlength="8" inputmode="numeric" autocomplete="off"/>
+              <div class="turno-field-error" id="turno-dni-error"></div>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="turno-label" for="turno-email">Correo electrónico <span style="color:var(--rc-red)">*</span></label>
+              <input type="email" id="turno-email" class="turno-input"
+                placeholder="correo@ejemplo.com" maxlength="254" autocomplete="email"/>
+              <div class="turno-field-error" id="turno-email-error"></div>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="turno-label" for="turno-telefono">Teléfono <span style="color:var(--rc-red)">*</span></label>
+              <input type="tel" id="turno-telefono" class="turno-input"
+                placeholder="Ej: 3854123456" maxlength="20" inputmode="tel" autocomplete="tel"/>
+              <div class="turno-field-error" id="turno-telefono-error"></div>
+            </div>
+            <div class="col-12">
+              <label class="turno-label" for="turno-direccion">Dirección <span style="color:var(--rc-red)">*</span></label>
+              <input type="text" id="turno-direccion" class="turno-input"
+                placeholder="Ej: Av. Belgrano 1234, Capital" maxlength="300" autocomplete="street-address"/>
+              <div class="turno-field-error" id="turno-direccion-error"></div>
+            </div>
+          </div>
+          <div id="error-datos" class="turno-error" style="display:none;">
+            <i class="bi bi-exclamation-circle-fill me-1"></i>
+            Completá todos los campos obligatorios.
+          </div>
+        </div>
+
+        <!-- PASO 3: Fecha y hora -->
+        <div id="turno-paso-3" style="display:none;">
+          <h6 style="font-weight:700;color:#1c1c1c;margin-bottom:16px;">
+            Elegí fecha y horario
+          </h6>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="turno-label" for="turno-fecha">Fecha <span style="color:var(--rc-red)">*</span></label>
+              <input type="date" id="turno-fecha" class="turno-input"/>
+              <small style="color:#888;font-size:12px;">
+                Los turnos se asignan de lunes a viernes de 09:00 a 13:00 hs.
+              </small>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="turno-label" for="turno-horario">Horario <span style="color:var(--rc-red)">*</span></label>
+              <select id="turno-horario" class="turno-input">
+                <option value="">Seleccioná un horario</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="error-fecha" class="turno-error" style="display:none;">
+            <i class="bi bi-exclamation-circle-fill me-1"></i>
+            Seleccioná una fecha y horario válidos.
+          </div>
+
+          <!-- Resumen del turno -->
+          <div id="turno-resumen" style="display:none;margin-top:20px;">
+            <div style="background:#f8f9fa;border:1px solid #e5e7eb;border-radius:10px;padding:18px 20px;">
+              <p style="font-weight:700;color:#1c1c1c;margin-bottom:12px;">
+                <i class="bi bi-clipboard-check" style="color:var(--rc-red);margin-right:6px;"></i>
+                Resumen de tu turno
+              </p>
+              <div class="row g-2" style="font-size:14px;">
+                <div class="col-5" style="color:#888;font-weight:600;">Trámite:</div>
+                <div class="col-7" id="res-tramite" style="color:#1c1c1c;font-weight:700;"></div>
+                <div class="col-5" style="color:#888;font-weight:600;">Persona:</div>
+                <div class="col-7" id="res-nombre" style="color:#1c1c1c;"></div>
+                <div class="col-5" style="color:#888;font-weight:600;">DNI:</div>
+                <div class="col-7" id="res-dni" style="color:#1c1c1c;"></div>
+                <div class="col-5" style="color:#888;font-weight:600;">Fecha:</div>
+                <div class="col-7" id="res-fecha" style="color:#1c1c1c;"></div>
+                <div class="col-5" style="color:#888;font-weight:600;">Horario:</div>
+                <div class="col-7" id="res-horario" style="color:#1c1c1c;"></div>
+                <div class="col-5" style="color:#888;font-weight:600;">Sede:</div>
+                <div class="col-7" style="color:#1c1c1c;">{{ sede_turnos.nombre|default:"Sede Central" }}{% if sede_turnos.direccion %} – {{ sede_turnos.direccion }}{% endif %}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PASO 4: Confirmación exitosa -->
+        <div id="turno-paso-4" style="display:none;text-align:center;padding:20px 0;">
+          <div style="width:72px;height:72px;background:rgba(40,167,69,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+            <i class="bi bi-check-circle-fill" style="font-size:36px;color:#28a745;"></i>
+          </div>
+          <h5 style="font-weight:700;color:#1c1c1c;margin-bottom:8px;">¡Turno solicitado!</h5>
+          <p style="color:#555;font-size:14px;margin-bottom:4px;">
+            Te enviamos un email de confirmación a <strong id="conf-email"></strong>
+          </p>
+          <p style="color:#888;font-size:13px;">
+            Presentate con tu DNI el día del turno.
+          </p>
+          <div id="conf-resumen" style="background:#f8f9fa;border:1px solid #e5e7eb;border-radius:10px;padding:16px;margin-top:16px;text-align:left;font-size:14px;">
+            <strong id="conf-tramite"></strong><br/>
+            <span style="color:#555;" id="conf-fecha-hora"></span><br/>
+            <span style="color:#555;">{{ sede_turnos.nombre|default:"Sede Central" }}{% if sede_turnos.direccion %} – {{ sede_turnos.direccion }}{% endif %}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer con botones -->
+      <div class="modal-footer" style="border-top:1px solid #e5e7eb;padding:16px 28px;gap:10px;"
+        id="turno-footer">
+        <button class="btn-rc-outline" id="btn-turno-anterior" style="display:none;"
+          onclick="turnoAnterior()">
+          <i class="bi bi-arrow-left me-1"></i> Anterior
+        </button>
+        <button class="btn-rc" id="btn-turno-siguiente" onclick="turnoSiguiente()">
+          Siguiente <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

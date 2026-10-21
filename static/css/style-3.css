@@ -1,0 +1,266 @@
+/* ═══════════════════════════════════════════════════════════
+   Registro Civil – Santiago del Estero | style.css
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Variables ── */
+:root {
+  --rc-red:        #c8102e;
+  --rc-red-dark:   #a00d24;
+  --rc-red-light:  rgba(200,16,46,.09);
+  --rc-dark:       #1c1c1c;
+  --rc-text:       #2d3748;
+  --rc-muted:      #718096;
+  --rc-gray-bg:    #6b6b6b;
+  --rc-page-bg:    #ffffff;
+  --rc-surface:    #f8f9fa;
+  --rc-border:     #e5e7eb;
+  --rc-footer:     #1a1a1a;
+  --font-display:  'Barlow Condensed', sans-serif;
+  --font-body:     'Barlow', sans-serif;
+  --shadow-xs:     0 1px 3px rgba(0,0,0,.07);
+  --shadow-sm:     0 2px 8px rgba(0,0,0,.09);
+  --shadow-md:     0 4px 16px rgba(0,0,0,.11);
+  --shadow-red:    0 4px 20px rgba(200,16,46,.22);
+  --radius-sm:     5px;
+  --radius-md:     10px;
+  --radius-lg:     14px;
+  --ease:          cubic-bezier(.4,0,.2,1);
+  --trans:         all .22s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html  { scroll-behavior: smooth; }
+body  {
+  font-family: var(--font-body);
+  background-color: var(--rc-gray-bg);
+  color: var(--rc-text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Wrapper (blanco centrado sobre gris) ── */
+.page-wrapper {
+  background: var(--rc-page-bg);
+  max-width: 960px;
+  margin: 0 auto;
+  box-shadow: 0 0 60px rgba(0,0,0,.45);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ════════════════════ NAVBAR ════════════════════ */
+.navbar-rc {
+  background: #fff;
+  border-bottom: 3px solid var(--rc-red);
+  padding: 0 28px;
+  height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+.logo-rc {
+  width: 46px; height: 46px;
+  background: var(--rc-red); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-family: var(--font-display);
+  font-size: 17px; font-weight: 700; letter-spacing: .5px;
+  flex-shrink: 0; text-decoration: none;
+  transition: var(--trans); cursor: pointer;
+  box-shadow: 0 2px 8px rgba(200,16,46,.28);
+}
+.logo-rc:hover { background: var(--rc-red-dark); transform: scale(1.07); box-shadow: var(--shadow-red); }
+
+.nav-links { display: flex; gap: 2px; align-items: center; }
+.nav-links a {
+  padding: 7px 18px; text-decoration: none;
+  color: var(--rc-dark); font-weight: 600; font-size: 14.5px;
+  border-radius: var(--radius-sm); transition: var(--trans); position: relative;
+}
+.nav-links a:hover  { color: var(--rc-red); background: var(--rc-red-light); }
+.nav-links a.active { color: var(--rc-red); background: var(--rc-red-light); font-weight: 700; }
+
+.logo-sde {
+  font-family: var(--font-display);
+  font-size: 21px; font-weight: 800;
+  color: var(--rc-red); letter-spacing: 2px;
+  text-transform: uppercase; line-height: 1; text-align: right;
+}
+.logo-sde span {
+  display: block; font-size: 9.5px; font-weight: 600;
+  color: #aaa; letter-spacing: 3px; text-transform: uppercase; margin-top: 3px;
+}
+
+/* ════════════════════ CONTENIDO ════════════════════ */
+.page-content { flex: 1; padding: 20px 28px 48px; }
+
+/* Buscador */
+.search-wrap { display: flex; justify-content: center; margin-bottom: 22px; }
+.search-box {
+  display: flex; border: 2px solid var(--rc-red);
+  border-radius: var(--radius-md); overflow: hidden;
+  width: 100%; max-width: 540px; box-shadow: var(--shadow-red);
+  transition: var(--trans);
+}
+.search-box:focus-within { box-shadow: 0 0 0 3px rgba(200,16,46,.18); }
+.search-box input {
+  flex: 1; border: none; outline: none;
+  padding: 11px 18px; font-size: 14.5px;
+  font-family: var(--font-body); color: var(--rc-dark);
+}
+.search-box button {
+  background: var(--rc-red); border: none; color: #fff;
+  padding: 0 20px; font-size: 18px; cursor: pointer; transition: background .2s;
+}
+.search-box button:hover { background: var(--rc-red-dark); }
+
+/* ════════════════════ CARRUSEL ════════════════════ */
+.carousel-rc {
+  border-radius: var(--radius-lg); overflow: hidden;
+  margin-bottom: 36px; box-shadow: var(--shadow-red);
+}
+.carousel-rc .carousel-item {
+  background: var(--rc-red); min-height: 152px;
+  padding: 28px 40px; display: flex; align-items: center;
+}
+.slide-2 { background: linear-gradient(135deg,#b00020 0%,#c8102e 55%,#e03050 100%) !important; }
+.slide-3 { background: linear-gradient(135deg,#8b0000 0%,#c0001d 100%) !important; }
+
+.carousel-slide-content {
+  display: flex; align-items: center;
+  justify-content: space-between; width: 100%; gap: 24px;
+}
+.carousel-text h3 {
+  font-family: var(--font-display); font-size: 26px; font-weight: 700;
+  color: #fff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+}
+.carousel-text p { color: rgba(255,255,255,.86); font-size: 14px; margin: 0; }
+.carousel-text p strong { color: #fff; }
+.carousel-cta {
+  display: inline-block; margin-top: 12px; background: #fff; color: var(--rc-red) !important;
+  font-weight: 700; font-size: 13px; padding: 6px 16px;
+  border-radius: var(--radius-sm); text-decoration: none; transition: var(--trans);
+}
+.carousel-cta:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.carousel-icon-circle {
+  width: 84px; height: 84px; background: rgba(255,255,255,.16);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 38px; color: #fff; flex-shrink: 0;
+}
+.carousel-rc .carousel-indicators [data-bs-target] {
+  width: 9px; height: 9px; border-radius: 50%;
+  border: none; background: rgba(255,255,255,.5);
+}
+.carousel-rc .carousel-indicators .active { background: #fff; }
+
+/* ════════════════════ TÍTULOS ════════════════════ */
+.section-title {
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  color: var(--rc-dark); border-left: 4px solid var(--rc-red);
+  padding-left: 12px; margin-bottom: 18px; letter-spacing: .4px;
+}
+
+/* ════════════════════ CARDS SERVICIOS ════════════════════ */
+.service-card {
+  border: 2px solid var(--rc-border); border-radius: var(--radius-md);
+  padding: 30px 16px 24px; text-align: center; text-decoration: none;
+  color: var(--rc-dark); display: block; background: #fff;
+  transition: var(--trans); box-shadow: var(--shadow-xs);
+}
+.service-card:hover {
+  border-color: var(--rc-red); box-shadow: 0 8px 28px rgba(200,16,46,.15);
+  transform: translateY(-5px); color: var(--rc-red); background: #fff9fa;
+}
+.service-card .svc-icon {
+  font-size: 44px; margin-bottom: 12px; display: block;
+  color: var(--rc-dark); transition: color .22s var(--ease);
+}
+.service-card:hover .svc-icon { color: var(--rc-red); }
+.service-card .svc-label {
+  font-family: var(--font-display); font-size: 12.5px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+}
+
+/* ════════════════════ NOTICIAS ════════════════════ */
+.news-card {
+  border-radius: var(--radius-md); overflow: hidden;
+  border: 1px solid var(--rc-border); background: #fff;
+  height: 100%; display: flex; flex-direction: column;
+  transition: var(--trans); box-shadow: var(--shadow-xs);
+}
+.news-card:hover {
+  box-shadow: 0 10px 30px rgba(0,0,0,.11);
+  transform: translateY(-4px); border-color: #d0d0d0;
+}
+.news-thumb-placeholder {
+  width: 100%; height: 148px;
+  background: linear-gradient(135deg,#f5c6cb 0%,#e8b4bc 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px; color: var(--rc-red); flex-shrink: 0;
+}
+.news-thumb { width: 100%; height: 148px; object-fit: cover; display: block; }
+.news-body { padding: 14px 16px 18px; display: flex; flex-direction: column; flex: 1; }
+.news-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--rc-red); margin-bottom: 6px; display: block;
+}
+.news-title {
+  font-weight: 700; font-size: 14px; line-height: 1.45;
+  color: var(--rc-dark); margin-bottom: 8px; flex: 1;
+}
+.news-date { font-size: 12px; color: var(--rc-muted); margin-bottom: 12px; }
+
+/* ── Botón rojo global ── */
+.btn-rc {
+  background: var(--rc-red); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  padding: 8px 20px; font-size: 13px; font-weight: 600;
+  font-family: var(--font-body); cursor: pointer;
+  text-decoration: none; display: inline-block;
+  transition: var(--trans); align-self: flex-start; letter-spacing: .3px;
+}
+.btn-rc:hover {
+  background: var(--rc-red-dark); color: #fff;
+  transform: translateY(-1px); box-shadow: 0 4px 12px rgba(200,16,46,.3);
+}
+.btn-rc:active { transform: translateY(0); }
+
+/* Modal */
+.modal-header-rc { background: var(--rc-red); color: #fff; border-bottom: none; }
+.modal-header-rc .btn-close { filter: invert(1) brightness(2); }
+
+/* ════════════════════ FOOTER ════════════════════ */
+footer { background: var(--rc-footer); color: #bbb; padding: 38px 28px 18px; }
+.footer-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.footer-seal {
+  width: 50px; height: 50px; background: rgba(255,255,255,.07);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.footer-brand-text { font-size: 12px; color: #aaa; line-height: 1.6; }
+.footer-brand-text strong { color: #fff; font-size: 13px; }
+footer h6 {
+  font-family: var(--font-display); font-size: 11.5px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase; color: #fff;
+  margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid var(--rc-red);
+}
+footer a { display: block; color: #bbb; text-decoration: none; font-size: 13px; margin-bottom: 7px; transition: color .2s; }
+footer a:hover { color: var(--rc-red); }
+footer a i { margin-right: 6px; }
+.footer-divider { border-color: rgba(255,255,255,.09); margin: 24px 0 14px; }
+.footer-bottom { font-size: 11px; color: #555; text-align: center; }
+
+/* ════════════════════ RESPONSIVE ════════════════════ */
+@media (max-width: 767px) {
+  .page-content { padding: 16px 16px 32px; }
+  .nav-links { display: none; }
+  .carousel-rc .carousel-item { padding: 20px 18px; min-height: 118px; }
+  .carousel-text h3 { font-size: 19px; }
+  .carousel-icon-circle { width: 62px; height: 62px; font-size: 28px; }
+  footer { padding: 28px 16px 16px; }
+}
+@media (max-width: 480px) {
+  .navbar-rc { padding: 0 16px; }
+  .logo-sde  { font-size: 17px; }
+}

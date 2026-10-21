@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Inicio – Registro Civil Santiago del Estero{% endblock %}
+{% block nav_inicio %}active{% endblock %}
+
+{% block contenido %}
+
+<!-- Buscador -->
+<div class="search-wrap reveal" style="position:relative; z-index:20;">
+  <div style="position:relative; width:100%; max-width:540px;">
+    <div class="search-box">
+      <input type="text" id="buscador-input" placeholder="Buscar trámite, sede u oficina…" aria-label="Buscar" autocomplete="off"/>
+      <button type="button" id="buscador-btn" aria-label="Buscar"><i class="bi bi-search"></i></button>
+    </div>
+    <div id="buscador-resultados" style="
+      display:none; position:absolute; z-index:1050;
+      background:#fff; border:1px solid #ddd; border-top:none;
+      border-radius:0 0 10px 10px; width:100%;
+      box-shadow:0 8px 24px rgba(0,0,0,.12); overflow:hidden;
+      top:100%; left:0;
+    "></div>
+  </div>
+</div>
+
+<!-- Carrusel -->
+<div id="carouselRC" class="carousel slide carousel-rc" data-bs-ride="carousel" data-bs-interval="10000">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselRC" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Diapositiva 1"></button>
+    <button type="button" data-bs-target="#carouselRC" data-bs-slide-to="1" aria-label="Diapositiva 2"></button>
+    <button type="button" data-bs-target="#carouselRC" data-bs-slide-to="2" aria-label="Diapositiva 3"></button>
+  </div>
+
+<div class="carousel-inner">
+  <div class="carousel-item active">
+    <div class="carousel-slide-content" style="
+      background: linear-gradient(135deg, rgba(200,16,46,.20) 0%, rgba(160,13,36,.50) 100%),
+      url('https://i.pinimg.com/1200x/a2/ea/06/a2ea06ce7c72f9c99532db94086bdb55.jpg') center/cover no-repeat;">
+      <div class="carousel-text">
+        <h3>Abierto: Lunes a Viernes</h3>
+        <p>Horario de atención: <strong>09:00 a 13:00 hs.</strong></p>
+        <p style="font-size:12px;margin-top:4px;opacity:.8">Registro Civil de la Provincia de Santiago del Estero</p>
+      </div>
+      <div class="carousel-icon-circle"><i class="bi bi-clock-fill"></i></div>
+    </div>
+  </div>
+  <div class="carousel-item">
+    <div class="carousel-slide-content" style="
+      background: linear-gradient(135deg, rgba(200,16,46,.20) 0%, rgba(160,13,36,.50) 100%),
+      url('https://i.pinimg.com/736x/a7/bb/5c/a7bb5cc6c1b28c89f33ba1a646bad549.jpg') center/cover no-repeat;">
+      <div class="carousel-text">
+        <h3>Trámites para DNI en línea disponibles</h3>
+        <p>Iniciá tu trámite desde casa, sin necesidad de concurrir a la sede.</p>
+        <a href="{% url 'tramites' %}" class="carousel-cta">Ver trámites</a>
+      </div>
+      <div class="carousel-icon-circle"><i class="bi bi-laptop-fill"></i></div>
+    </div>
+  </div>
+  <div class="carousel-item">
+    <div class="carousel-slide-content" style="
+      background: linear-gradient(135deg, rgba(200,16,46,.20) 0%, rgba(160,13,36,.50) 100%),
+      url('https://i.pinimg.com/736x/ee/c8/a3/eec8a3c990051dbd83922240692c469e.jpg') center/cover no-repeat;">
+      <div class="carousel-text">
+        <h3>Turno previo disponible</h3>
+        <p>Para atención presencial solicitá tu turno con anticipación.</p>
+        <a href="#" class="carousel-cta" data-bs-toggle="modal" data-bs-target="#modalTurno">Solicitar turno</a>
+      </div>
+      <div class="carousel-icon-circle"><i class="bi bi-calendar-check-fill"></i></div>
+    </div>
+  </div>
+</div>
+</div>
+
+  <!-- Trámites principales -->
+  <p class="section-title reveal">Trámites principales</p>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3 reveal delay-1">
+      <a href="{% url 'nacimiento' %}" class="service-card">
+        <i class="bi bi-person-fill-add svc-icon"></i>
+        <div class="svc-label">Nacimiento</div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3 reveal delay-2">
+      <a href="{% url 'identificacion' %}" class="service-card">
+        <i class="bi bi-person-vcard-fill svc-icon"></i>
+        <div class="svc-label">Identificación</div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3 reveal delay-3">
+      <a href="{% url 'matrimonio' %}" class="service-card">
+        <i class="bi bi-people-fill svc-icon"></i>
+        <div class="svc-label">Matrimonio</div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3 reveal delay-4">
+      <a href="{% url 'defuncion' %}" class="service-card">
+        <i class="bi bi-file-earmark-medical-fill svc-icon"></i>
+        <div class="svc-label">Defunción</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Noticias -->
+  <p class="section-title reveal">Noticias</p>
+  <div class="row g-3 mb-2 align-items-start reveal delay-1" id="noticias-grid">
+    <div class="col-12 text-center text-muted py-3">Cargando noticias…</div>
+  </div>
+
+  <!-- FAQ -->
+<p class="section-title mt-4 reveal">Preguntas frecuentes</p>
+<div class="accordion" id="faq-accordion">
+
+  <div class="faq-item reveal delay-1">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button"
+        data-bs-toggle="collapse" data-bs-target="#faq-1">
+        ¿Cómo saco un turno para el DNI?
+      </button>
+    </h2>
+    <div id="faq-1" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+      <div class="accordion-body faq-body">
+        Podés solicitar tu turno directamente desde este sitio haciendo clic en el botón
+        <strong>"Solicitar turno"</strong> que aparece en el carrusel del inicio o en la página de cada trámite de DNI.
+        Completá tus datos personales, elegí el trámite, la fecha y el horario disponible.
+        Los turnos son de lunes a viernes de 09:00 a 13:00 hs.
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-item reveal delay-2">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button"
+        data-bs-toggle="collapse" data-bs-target="#faq-2">
+        ¿Cuáles son los horarios de atención del Registro Civil?
+      </button>
+    </h2>
+    <div id="faq-2" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+      <div class="accordion-body faq-body">
+        El Registro Civil atiende de <strong>lunes a viernes de 09:00 a 13:00 hs.</strong>
+        No se atiende los sábados, domingos ni feriados nacionales y provinciales.
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-item reveal delay-3">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button"
+        data-bs-toggle="collapse" data-bs-target="#faq-3">
+        ¿Qué documentos necesito para inscribir un nacimiento?
+      </button>
+    </h2>
+    <div id="faq-3" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+      <div class="accordion-body faq-body">
+        Para inscribir un nacimiento necesitás: certificado médico de nacimiento original,
+        DNI de ambos progenitores y libreta de familia (si los padres están casados).
+        En caso de progenitores extranjeros, presentar DNI, pasaporte u otro documento vigente.
+        La inscripción debe realizarse dentro de los <strong>40 días corridos</strong> del nacimiento.
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-item reveal delay-4">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button"
+        data-bs-toggle="collapse" data-bs-target="#faq-4">
+        ¿El trámite de DNI tiene costo?
+      </button>
+    </h2>
+    <div id="faq-4" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+      <div class="accordion-body faq-body">
+        El DNI tiene un costo que varía según el tipo de entrega:
+        <strong>Normal</strong> (15 días hábiles), <strong>Exprés</strong> (48 a 96 hs.)
+        o <strong>Al instante</strong> (2 a 6 hs., solo en aeropuertos).
+        Consultá los valores actualizados en la sección
+        <a href="{% url 'identificacion' %}" style="color:var(--rc-red);font-weight:700;">Identificación</a>.
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-item reveal">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button"
+        data-bs-toggle="collapse" data-bs-target="#faq-5">
+        ¿Puedo inscribir un nacimiento si el padre no reconoce al hijo?
+      </button>
+    </h2>
+    <div id="faq-5" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+      <div class="accordion-body faq-body">
+        Sí. La madre puede inscribir al hijo con su sola presencia. El niño llevará el apellido
+        materno. El reconocimiento paterno puede realizarse en cualquier momento posterior
+        en el Registro Civil, de forma voluntaria.
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-item reveal delay-1">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button"
+        data-bs-toggle="collapse" data-bs-target="#faq-6">
+        ¿Cómo obtengo una copia del acta de nacimiento, matrimonio o defunción?
+      </button>
+    </h2>
+    <div id="faq-6" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+      <div class="accordion-body faq-body">
+        Podés solicitar copias de actas presentándote en cualquier sede del Registro Civil
+        con tu DNI. También podés gestionarlas a través de
+        <a href="https://www.argentina.gob.ar/miargentina" target="_blank" rel="noopener"
+          style="color:var(--rc-red);font-weight:700;">Mi Argentina</a> o
+        <a href="https://tramitesadistancia.gob.ar" target="_blank" rel="noopener"
+          style="color:var(--rc-red);font-weight:700;">Trámites a Distancia (TAD)</a>.
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-item reveal delay-2">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button"
+        data-bs-toggle="collapse" data-bs-target="#faq-7">
+        ¿Qué pasa si pierdo el turno?
+      </button>
+    </h2>
+    <div id="faq-7" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+      <div class="accordion-body faq-body">
+        Si no podés asistir, comunicate con anticipación con el Registro Civil o acercate a
+        la sede para cancelarlo, así otro ciudadano puede aprovechar ese horario. Si no te
+        presentás, el turno queda registrado como ausente. Podés solicitar un nuevo turno
+        desde este sitio cuando lo necesites.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
